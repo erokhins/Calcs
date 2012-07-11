@@ -1,69 +1,151 @@
 package org.hanuna.calcs.parser;
 
-import java.io.IOException;
-import java.io.StreamTokenizer;
+import java.io.*;
+import static org.hanuna.calcs.parser.LexerToken.*;
 
 /**
  * @author erokhins
  */
-class Lexer{
+public class Lexer {
 
-    public static final int TT_PLUS = 1;  // +
-    public static final int TT_MINUS = 2; // -
-    public static final int TT_MULT = 3;  // *
-    public static final int TT_BKT_O = 5; // (
-    public static final int TT_BKT_C = 6; // )
-    public static final int TT_EQ = 7;    // =
-    public static final int TT_VAR = 12;   // asd
-    public static final int TT_RUN = 10;   // >
-    public static final int TT_INT = 11;   // 239
-    public static final int TT_STOP = -1;  // error or end file
-    public static final int TT_ER = -2;  // error input syntax
+    private final Reader f;
+    private LexerToken t;
+    private int c; // this char in file
 
-    private StreamTokenizer in;
-    public int     ttype;
-    public String  sval;
-    public int     nval;
-
-    Lexer(StreamTokenizer in){
-        this.in = in;
+    public Lexer(Reader f) {
+        this.f = f;
+        readNextChar();
     }
 
-    int next(){
+    public LexerToken next() {
+        readSpaces();
+        switch (c) {
+            case -2:
+                t = new LexerToken(TT_IOER, "");
+                break;
+
+            case -1:
+                t = new LexerToken(TT_STOP, "");
+                break;
+
+            case '-':
+                t = new LexerToken(TT_MINUS, "");
+                break;
+
+            case '+':
+                t = new LexerToken(TT_PLUS, "");
+                break;
+
+            case '*':
+                t = new LexerToken(TT_MULT, "");
+                break;
+
+            case '/':
+                t = new LexerToken(TT_DIV, "");
+                break;
+
+            case '(':
+                t = new LexerToken(TT_BKT_O, "");
+                break;
+
+            case ')':
+                t = new LexerToken(TT_BKT_C, "");
+                break;
+
+            case '=':
+                t = new LexerToken(TT_EQ, "");
+                break;
+
+            case '>':
+                t = new LexerToken(TT_RUN, "");
+                break;
+
+            default:
+                if (itIsLetter(c)) {
+                    t = new LexerToken(TT_VAR, readVar());
+                } else if (itIsNumber(c)) {
+                    t = new LexerToken(TT_INT, readInt());
+                } else {
+                    t = new LexerToken(TT_ER, "");
+                }
+                break;
+        }
+        int tt = t.getT();
+        if (tt != TT_VAR && tt != TT_INT) {   // if is 1 symbol - read next
+            readNextChar();
+        }
+
+        return t;
+    }
+
+    public LexerToken getToken() {
+        return t;
+    }
+
+
+    private int readNextChar() {
         try{
-            in.nextToken();
+            c = f.read();
         } catch (IOException e) {
-            this.ttype = Lexer.TT_STOP;
-            return this.ttype;
+            c = -2;
         }
-        switch (in.ttype){
-            case StreamTokenizer.TT_EOF: this.ttype = Lexer.TT_STOP; break;
-            case StreamTokenizer.TT_NUMBER:
-                this.ttype = Lexer.TT_INT;
-                this.nval = (int) in.nval;
-                break;
-            case StreamTokenizer.TT_WORD:
-                this.ttype = Lexer.TT_VAR;
-                this.sval = in.sval;
-                break;
-            case 61: ttype = TT_EQ;
-                break;
-            case 62: ttype = TT_RUN;
-                in.ordinaryChar('-');
-                break;
-            case 40: ttype = TT_BKT_O;
-                break;
-            case 41: ttype = TT_BKT_C;
-                break;
-            case 43: ttype = TT_PLUS;
-                break;
-            case 45: ttype = TT_MINUS;
-                break;
-            case 42: ttype = TT_MULT;
-                break;
-
-            default: ttype = TT_ER;
-        }
-        return this.ttype;
+        return c;
     }
+
+    /**
+     * if (endFile) {
+     *     return -1;
+     * } elseif (IOError) {
+     *     return -2;
+     * } else {
+     *     return 0;
+     * }
+     */
+
+    private int readSpaces() {
+        while ((c == '\n') || (c == '\r') || (c == ' ')) {
+            readNextChar();
+            if(c < 0){
+                return c;
+            }
+        }
+        return 0;
+    }
+
+    private String readInt() {
+        String s = "";
+        while (itIsNumber(c)){
+            s += (char) c;
+            readNextChar();
+        }
+        return s;
+    }
+
+    private String readVar() {
+        String s = "";
+        if (itIsLetter(c)) {
+            s += (char) c;
+        } else {
+            return s;
+        }
+        readNextChar();
+
+        while (itIsLetter(c) || itIsNumber(c)) {
+            s += (char) c;
+            readNextChar();
+        }
+
+        return s;
+    }
+
+    private boolean itIsNumber(int c){
+        return (c >= '0') && (c <= '9');
+    }
+
+    private boolean itIsLetter(int c){
+        return ((c >= 'a') && (c <= 'z'))
+                || ((c >= 'A') && (c <= 'Z'))
+                || (c == '_');
+    }
+
 }
