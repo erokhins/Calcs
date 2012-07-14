@@ -12,10 +12,29 @@ public class Lexer {
     private LexerToken t;
     private int c; // this char in file
 
+
     public Lexer(Reader f) {
         this.f = f;
         readNextChar();
     }
+
+    public Lexer(String s) {
+        this(new StringReader(s));
+    }
+
+    public Lexer(Reader f, boolean readFirstToken) {
+        this(f);
+        if (readFirstToken) {
+            this.next();
+        }
+    }
+
+    public Lexer(String s, boolean readFirstToken) {
+        this(new StringReader(s), readFirstToken);
+    }
+
+
+
 
     public LexerToken next() {
         readSpaces();

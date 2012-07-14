@@ -15,10 +15,27 @@ public class Parser {
             if (l.next().getT() != TT_EQ) {
                 throw new ParserError("expected '=', but found " + l.getToken().toString());
             }
-            if (l.next().getT() != TT_INT) {
+            String sign = "";
+
+            switch (l.next().getT()) {
+                case TT_PLUS:
+                    sign = "+";
+                    l.next();
+                    break;
+
+                case TT_MINUS:
+                    sign = "-";
+                    l.next();
+                    break;
+
+                default:
+                    // Do nothing
+            }
+            if (l.getToken().getT() != TT_INT) {
                 throw new ParserError("expected number, but found " + l.getToken().toString());
             }
-            int k = new Integer(l.getToken().getS());
+
+            int k = new Integer(sign+l.getToken().getS());
             list.put(s, k);
             l.next();
         }

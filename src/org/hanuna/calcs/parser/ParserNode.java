@@ -3,10 +3,8 @@ package org.hanuna.calcs.parser;
 /**
  * @author erokhins
  */
-public class ParserNode {
-
-
-
+public interface ParserNode {
+    <T> T accept(ExpressionVisitor<T> visitor)  throws ExpressionVisitorError;
 }
 
 
