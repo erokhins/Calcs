@@ -66,7 +66,7 @@ public class Lexer {
                 } else if (itIsNumber(c)) {
                     t = new LexerToken(TT_INT, readInt());
                 } else {
-                    t = new LexerToken(TT_ER, "");
+                    t = new LexerToken(TT_ER, "" + (char) this.c);
                 }
                 break;
         }
