@@ -35,4 +35,60 @@ public class LexerToken {
         return s;
     }
 
+    public String toString(){
+        if ((ttype == TT_INT) || (ttype == TT_VAR) || (ttype == TT_ER)){
+            return s;
+        } else {
+            return typeToStr(ttype);
+        }
+    }
+
+    public static String typeToStr(int ttype){
+        switch (ttype) {
+            case TT_BKT_O:
+                return "(";
+
+            case TT_BKT_C:
+                return ")";
+
+            case TT_DIV:
+                return "/";
+
+            case TT_MULT:
+                return "*";
+
+            case TT_PLUS:
+                return "+";
+
+            case TT_MINUS:
+                return "-";
+
+            case TT_EQ:
+                return "=";
+
+            case TT_RUN:
+                return ">";
+
+            case TT_STOP:
+                return "end of file";
+
+            case TT_ER:
+                return "error symbol";
+
+            case TT_INT:
+                return "number";
+
+            case TT_VAR:
+                return "var";
+
+            case TT_IOER:
+                return "IO error";
+
+            default:
+                return "undefined";
+        }
+    }
+
+
+
 }
