@@ -63,33 +63,81 @@ public class Parser {
     }
 
     public static ParserNode parseSum(Lexer l) throws ParserError {
+        return parseSum(l, false);
+    }
+
+    /**
+     * change need for this: a-b+c -> {var:a - {var:b - var:c}}
+     * a-b+c-d -> a-(b-c+d) -> a-(b-(c-d))
+    */
+    public static ParserNode parseSum(Lexer l, boolean change) throws ParserError {
         ParserNode left = parseMult(l);
         int type = l.getToken().getT();
-        ParserNode right = null;
+        ParserNode right;
 
+        switch (type) {
+            case TT_PLUS:
+                l.next();
+                if (change) {
+                    right = parseSum(l, !change);
+                    return new ParserNodeBin(left, right, TT_MINUS);
+                } else {
+                    right = parseSum(l, change);
+                    return new ParserNodeBin(left, right, TT_PLUS);
+                }
 
-        if ((type == TT_PLUS) || (type == TT_MINUS)) {
-            l.next();
-            right = parseSum(l);
-            return new ParserNodeBin(left, right, type);
-        } else {
-            return left;
+            case TT_MINUS: {
+                l.next();
+                if (change) {
+                    right = parseSum(l, change);
+                    return new ParserNodeBin(left, right, TT_PLUS);
+                } else {
+                    right = parseSum(l, !change);
+                    return new ParserNodeBin(left, right, TT_MINUS);
+                }
+            }
+
+            default:
+                return left;
         }
+
     }
 
 
+    // change: see parseSum
     public static ParserNode parseMult(Lexer l) throws ParserError {
+        return parseMult(l, false);
+    }
+
+    public static ParserNode parseMult(Lexer l, boolean change) throws ParserError {
         ParserNode left = parseFactor(l);
         int type = l.getToken().getT();
         ParserNode right = null;
 
+        switch (type) {
+            case TT_MULT:
+                l.next();
+                if (change) {
+                    right = parseMult(l, !change);
+                    return new ParserNodeBin(left, right, TT_DIV);
+                } else {
+                    right = parseMult(l, change);
+                    return new ParserNodeBin(left, right, TT_MULT);
+                }
 
-        if((type == TT_MULT) || (type == TT_DIV)){
-            l.next();
-            right = parseMult(l);
-            return new ParserNodeBin(left, right, type);
-        } else {
-            return left;
+            case TT_DIV: {
+                l.next();
+                if (change) {
+                    right = parseMult(l, change);
+                    return new ParserNodeBin(left, right, TT_MULT);
+                } else {
+                    right = parseMult(l, !change);
+                    return new ParserNodeBin(left, right, TT_DIV);
+                }
+            }
+
+            default:
+                return left;
         }
 
     }

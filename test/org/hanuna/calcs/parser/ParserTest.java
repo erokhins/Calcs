@@ -65,5 +65,12 @@ public class ParserTest {
 
         runTestParseExpression(">a/b-c",
                 "{{var:a / var:b} - var:c}");
+
+        runTestParseExpression(">a - b + c - d",
+                               "{var:a - {var:b - {var:c - var:d}}}");
+
+        runTestParseExpression(">abc/b/c*d",
+                               "{var:abc / {var:b * {var:c / var:d}}}");
+
     }
 }
