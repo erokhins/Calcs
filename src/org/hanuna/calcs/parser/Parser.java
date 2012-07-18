@@ -1,46 +1,15 @@
 package org.hanuna.calcs.parser;
 
 
-import static org.hanuna.calcs.parser.LexerToken.*;
+import java.io.IOException;
+
+import static org.hanuna.calcs.parser.LexerTokenType.*;
 
 /**
  * @author erokhins
  */
 public class Parser {
 
-    public static ListOfVars parseListOfVars(Lexer l) throws ParserError {
-        ListOfVars list = new ListOfVars();
-        while (l.getToken().getT() == TT_VAR) {
-            String s = l.getToken().getS();
-            if (l.next().getT() != TT_EQ) {
-                throw new ParserError("expected '=', but found " + l.getToken().toString());
-            }
-            String sign = "";
-
-            switch (l.next().getT()) {
-                case TT_PLUS:
-                    sign = "+";
-                    l.next();
-                    break;
-
-                case TT_MINUS:
-                    sign = "-";
-                    l.next();
-                    break;
-
-                default:
-                    // Do nothing
-            }
-            if (l.getToken().getT() != TT_INT) {
-                throw new ParserError("expected number, but found " + l.getToken().toString());
-            }
-
-            int k = new Integer(sign+l.getToken().getS());
-            list.put(s, k);
-            l.next();
-        }
-        return list;
-    }
 
 
     /*
@@ -48,21 +17,21 @@ public class Parser {
    * M = F | F * M
    * F = (S) | Var | Int | + F
    * */
-    public static ParserNode parseExpression(Lexer l) throws ParserError {
-        if (l.getToken().getT() == TT_RUN) {
+    public static ParserNode parseExpression(Lexer l) throws ParserException, IOException {
+        if (l.getTokenType() == RUN) {
             l.next();
             ParserNode p = parseSum(l);
-            if (l.getToken().getT() != TT_STOP) {
-                throw new ParserError("expected end of file, but found " + l.getToken().toString());
+            if (l.getTokenType() != STOP) {
+                throw new ParserException("expected end of file, but found " + l.getToken().toString());
             } else {
                 return p;
             }
         } else {
-            throw new ParserError("expected '>', but found " + l.getToken().toString());
+            throw new ParserException("expected '>', but found " + l.getToken().toString());
         }
     }
 
-    public static ParserNode parseSum(Lexer l) throws ParserError {
+    public static ParserNode parseSum(Lexer l) throws ParserException, IOException {
         return parseSum(l, false);
     }
 
@@ -70,32 +39,31 @@ public class Parser {
      * change need for this: a-b+c -> {var:a - {var:b - var:c}}
      * a-b+c-d -> a-(b-c+d) -> a-(b-(c-d))
     */
-    public static ParserNode parseSum(Lexer l, boolean change) throws ParserError {
+    public static ParserNode parseSum(Lexer l, boolean change) throws ParserException, IOException {
         ParserNode left = parseMult(l);
-        int type = l.getToken().getT();
+        LexerTokenType type = l.getTokenType();
         ParserNode right;
 
         switch (type) {
-            case TT_PLUS:
+            case PLUS:
                 l.next();
                 if (change) {
                     right = parseSum(l, !change);
-                    return new ParserNodeBin(left, right, TT_MINUS);
+                    return new ParserNodeBinary(left, right, MINUS);
                 } else {
                     right = parseSum(l, change);
-                    return new ParserNodeBin(left, right, TT_PLUS);
+                    return new ParserNodeBinary(left, right, PLUS);
                 }
 
-            case TT_MINUS: {
+            case MINUS:
                 l.next();
                 if (change) {
                     right = parseSum(l, change);
-                    return new ParserNodeBin(left, right, TT_PLUS);
+                    return new ParserNodeBinary(left, right, PLUS);
                 } else {
                     right = parseSum(l, !change);
-                    return new ParserNodeBin(left, right, TT_MINUS);
+                    return new ParserNodeBinary(left, right, MINUS);
                 }
-            }
 
             default:
                 return left;
@@ -105,34 +73,34 @@ public class Parser {
 
 
     // change: see parseSum
-    public static ParserNode parseMult(Lexer l) throws ParserError {
+    public static ParserNode parseMult(Lexer l) throws ParserException, IOException {
         return parseMult(l, false);
     }
 
-    public static ParserNode parseMult(Lexer l, boolean change) throws ParserError {
+    public static ParserNode parseMult(Lexer l, boolean change) throws ParserException, IOException {
         ParserNode left = parseFactor(l);
-        int type = l.getToken().getT();
-        ParserNode right = null;
+        LexerTokenType type = l.getTokenType();
+        ParserNode right;
 
         switch (type) {
-            case TT_MULT:
+            case MULT:
                 l.next();
                 if (change) {
                     right = parseMult(l, !change);
-                    return new ParserNodeBin(left, right, TT_DIV);
+                    return new ParserNodeBinary(left, right, DIV);
                 } else {
                     right = parseMult(l, change);
-                    return new ParserNodeBin(left, right, TT_MULT);
+                    return new ParserNodeBinary(left, right, MULT);
                 }
 
-            case TT_DIV: {
+            case DIV: {
                 l.next();
                 if (change) {
                     right = parseMult(l, change);
-                    return new ParserNodeBin(left, right, TT_MULT);
+                    return new ParserNodeBinary(left, right, MULT);
                 } else {
                     right = parseMult(l, !change);
-                    return new ParserNodeBin(left, right, TT_DIV);
+                    return new ParserNodeBinary(left, right, DIV);
                 }
             }
 
@@ -143,43 +111,43 @@ public class Parser {
     }
 
 
-    public static ParserNode parseFactor(Lexer l) throws ParserError {
-        int type = l.getToken().getT();
-        ParserNode left = null;
-        switch (type){
-            case TT_VAR:
-                left = new ParserNodeVar(TT_VAR, l.getToken().getS());
+    public static ParserNode parseFactor(Lexer l) throws ParserException, IOException {
+        LexerTokenType type = l.getTokenType();
+        ParserNode left;
+        switch (type) {
+            case VAR:
+                left = new ParserNodeVar(l.getToken().getString());
                 l.next();
                 return left;
 
-            case TT_INT:
-                left = new ParserNodeVar(TT_INT, l.getToken().getS());
+            case NUMBER:
+                left = new ParserNodeNumber(l.getToken().getString());
                 l.next();
                 return left;
 
-            case TT_PLUS:
+            case PLUS:
                 l.next();
                 left = parseFactor(l);
-                return new ParserNodeUn(TT_PLUS, left);
+                return new ParserNodeUnary(PLUS, left);
 
-            case TT_MINUS:
+            case MINUS:
                 l.next();
                 left = parseFactor(l);
-                return new ParserNodeUn(TT_MINUS, left);
+                return new ParserNodeUnary(MINUS, left);
 
-            case TT_BKT_O:
+            case BRACKET_OPEN:
                 l.next();
                 left = parseSum(l);
-                if (l.getToken().getT() == TT_BKT_C){
+                if (l.getTokenType() == BRACKET_CLOSE){
                     l.next();
                     return left;
                 } else {
-                    throw new ParserError("expected ')', but found " + l.getToken().toString());
+                    throw new ParserException("expected ')', but found " + l.getToken().toString());
                 }
 
 
             default:
-                throw new ParserError("expected var, number, '+', '-', '(' or ')', but found " + l.getToken().toString());
+                throw new ParserException("expected var, number, '+', '-', '(' or ')', but found " + l.getToken().toString());
         }
     }
 }

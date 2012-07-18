@@ -1,12 +1,12 @@
-package org.hanuna.calcs.parser;
+package org.hanuna.calcs;
 
 /**
  * @author erokhins
  */
-public class ExpressionVisitorError extends Exception {
+public class BadCodeException extends RuntimeException {
     private String s;
 
-    public ExpressionVisitorError(String s) {
+    public BadCodeException(String s) {
         this.s = s;
     }
 

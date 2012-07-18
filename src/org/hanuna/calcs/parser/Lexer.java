@@ -1,6 +1,9 @@
 package org.hanuna.calcs.parser;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+
 import static org.hanuna.calcs.parser.LexerToken.*;
 
 /**
@@ -8,163 +11,134 @@ import static org.hanuna.calcs.parser.LexerToken.*;
  */
 public class Lexer {
 
-    private final Reader f;
-    private LexerToken t;
-    private int c; // this char in file
+    private final Reader reader;
+    private LexerToken currentToken = null;
+    private int currentChar;
 
 
-    public Lexer(Reader f) {
-        this.f = f;
+    public Lexer(Reader reader) throws IOException {
+        this.reader = reader;
         readNextChar();
     }
-
-    public Lexer(String s) {
+    public Lexer(String s) throws IOException {
         this(new StringReader(s));
     }
 
-    public Lexer(Reader f, boolean readFirstToken) {
-        this(f);
-        if (readFirstToken) {
-            this.next();
-        }
-    }
-
-    public Lexer(String s, boolean readFirstToken) {
-        this(new StringReader(s), readFirstToken);
-    }
-
-
-
-
-    public LexerToken next() {
+    public LexerToken next() throws IOException {
         readSpaces();
-        switch (c) {
-            case -2:
-                t = new LexerToken(TT_IOER, "");
-                break;
-
+        switch (currentChar) {
             case -1:
-                t = new LexerToken(TT_STOP, "");
+                currentToken = TOKEN_STOP;
                 break;
 
             case '-':
-                t = new LexerToken(TT_MINUS, "");
+                currentToken = TOKEN_MINUS;
                 break;
 
             case '+':
-                t = new LexerToken(TT_PLUS, "");
+                currentToken = TOKEN_PLUS;
                 break;
 
             case '*':
-                t = new LexerToken(TT_MULT, "");
+                currentToken = TOKEN_MULT;
                 break;
 
             case '/':
-                t = new LexerToken(TT_DIV, "");
+                currentToken = TOKEN_DIV;
                 break;
 
             case '(':
-                t = new LexerToken(TT_BKT_O, "");
+                currentToken = TOKEN_BRACKET_OPEN;
                 break;
 
             case ')':
-                t = new LexerToken(TT_BKT_C, "");
+                currentToken = TOKEN_BRACKET_CLOSE;
                 break;
 
             case '=':
-                t = new LexerToken(TT_EQ, "");
+                currentToken = TOKEN_EQUAL;
                 break;
 
             case '>':
-                t = new LexerToken(TT_RUN, "");
+                currentToken = TOKEN_RUN;
                 break;
 
             default:
-                if (itIsLetter(c)) {
-                    t = new LexerToken(TT_VAR, readVar());
-                } else if (itIsNumber(c)) {
-                    t = new LexerToken(TT_INT, readInt());
+                if (itIsLetter(currentChar)) {
+                    currentToken = LexerToken.newVar(readVar());
+                } else if (Character.isDigit(currentChar)) {
+                    currentToken = LexerToken.newNumber(readNumber());
                 } else {
-                    t = new LexerToken(TT_ER, "" + (char) this.c);
+                    currentToken = LexerToken.newError("" + (char) this.currentChar);
                 }
                 break;
         }
-        int tt = t.getT();
-        if (tt != TT_VAR && tt != TT_INT) {   // if is 1 symbol - read next
+
+        if (currentToken.isSimpleToken()) {   // if is 1 symbol - read next
             readNextChar();
         }
-
-        return t;
+        return currentToken;
     }
 
-    public LexerToken getToken() {
-        return t;
-    }
-
-
-    private int readNextChar() {
-        try{
-            c = f.read();
-        } catch (IOException e) {
-            c = -2;
+    public LexerToken getToken() throws IOException {
+        if (currentToken == null) {
+            this.next();
         }
-        return c;
+        return currentToken;
     }
 
-    /**
-     * if (endFile) {
-     *     return -1;
-     * } elseif (IOError) {
-     *     return -2;
-     * } else {
-     *     return 0;
-     * }
-     */
+    public LexerTokenType getTokenType() throws IOException {
+        return this.getToken().getType();
+    }
 
-    private int readSpaces() {
-        while ((c == '\n') || (c == '\r') || (c == ' ')) {
+
+    private int readNextChar() throws IOException {
+        currentChar = reader.read();
+        return currentChar;
+    }
+
+
+    private int readSpaces() throws IOException {
+        while ((currentChar == '\n') || (currentChar == '\r') || (currentChar == ' ')) {
             readNextChar();
-            if(c < 0){
-                return c;
+            if (currentChar < 0) {
+                return currentChar;
             }
         }
         return 0;
     }
 
-    private String readInt() {
-        String s = "";
-        while (itIsNumber(c)){
-            s += (char) c;
+    private String readNumber() throws IOException {
+        StringBuilder s = new StringBuilder();
+        while (Character.isDigit(currentChar)) {
+            s.append((char) currentChar);
             readNextChar();
         }
-        return s;
+        return s.toString();
     }
 
-    private String readVar() {
-        String s = "";
-        if (itIsLetter(c)) {
-            s += (char) c;
+
+
+    private String readVar() throws IOException {
+        StringBuilder s = new StringBuilder();
+        if (itIsLetter(currentChar)) {
+            s.append((char) currentChar);
         } else {
-            return s;
+            return "";
         }
         readNextChar();
 
-        while (itIsLetter(c) || itIsNumber(c)) {
-            s += (char) c;
+        while (itIsLetter(currentChar) || Character.isDigit(currentChar)) {
+            s.append((char) currentChar);
             readNextChar();
         }
 
-        return s;
+        return s.toString();
     }
 
-    private boolean itIsNumber(int c){
-        return (c >= '0') && (c <= '9');
+    private boolean itIsLetter(int c) {
+        return Character.isLetter(c) || c == '_';
     }
 
-    private boolean itIsLetter(int c){
-        return ((c >= 'a') && (c <= 'z'))
-                || ((c >= 'A') && (c <= 'Z'))
-                || (c == '_');
-    }
 
 }

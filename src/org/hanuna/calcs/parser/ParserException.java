@@ -3,14 +3,14 @@ package org.hanuna.calcs.parser;
 /**
  * @author erokhins
  */
-public class ParserError extends Exception {
+public class ParserException extends Exception {
     private String s;
 
-    public ParserError(String s){
+    public ParserException(String s) {
         this.s = s;
     }
 
-    public String getMessage(){
+    public String getMessage() {
         return s;
     }
 }

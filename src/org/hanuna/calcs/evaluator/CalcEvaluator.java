@@ -1,76 +1,73 @@
 package org.hanuna.calcs.evaluator;
 
+import org.hanuna.calcs.BadCodeException;
 import org.hanuna.calcs.parser.*;
-import static org.hanuna.calcs.parser.LexerToken.*;
 
 /**
  * @author erokhins
  */
 public class CalcEvaluator implements ExpressionVisitor<Integer> {
-    private final ListOfVars list;
+    private final TableVars list;
 
-    public CalcEvaluator(ListOfVars list) {
+    public CalcEvaluator(TableVars list) {
         this.list = list;
     }
 
     @Override
-    public Integer visitBin(ParserNodeBin n) throws ExpressionVisitorError {
+    public Integer visitBin(ParserNodeBinary n) {
         if (n == null) {
-            throw new ExpressionVisitorError("null node");
+            throw new BadCodeException("null node");
         }
         switch (n.getType()) {
-            case TT_PLUS:
+            case PLUS:
                 return n.getLeft().accept(this) + n.getRight().accept(this);
 
-            case TT_MINUS:
+            case MINUS:
                 return n.getLeft().accept(this) - n.getRight().accept(this);
 
-            case TT_MULT:
+            case MULT:
                 return n.getLeft().accept(this) * n.getRight().accept(this);
 
-            case TT_DIV:
-                throw new ExpressionVisitorError("divide not supported");
+            case DIV:
+                throw new CalcEvaluatorException("divide not supported");
 
             default:
-                throw new ExpressionVisitorError("NodeBin: not expected type "+LexerToken.typeToStr(n.getType()));
+                throw new CalcEvaluatorException("NodeBin: not expected type " + n.getType().toString());
         }
     }
 
     @Override
-    public Integer visitUn(ParserNodeUn n) throws ExpressionVisitorError {
+    public Integer visitUn(ParserNodeUnary n) {
         if (n == null) {
-            throw new ExpressionVisitorError("null node");
+            throw new BadCodeException("null node");
         }
         switch (n.getType()) {
-            case TT_PLUS:
-                return n.getLeft().accept(this);
+            case PLUS:
+                return n.getOperand().accept(this);
 
-            case TT_MINUS:
-                return - n.getLeft().accept(this);
+            case MINUS:
+                return - n.getOperand().accept(this);
 
             default:
-                throw new ExpressionVisitorError("NodeUn: not expected type "+LexerToken.typeToStr(n.getType()));
+                throw new CalcEvaluatorException("NodeUn: not expected type " + n.getType().toString());
         }
     }
 
     @Override
-    public Integer visitVar(ParserNodeVar n) throws ExpressionVisitorError {
+    public Integer visitVar(ParserNodeVar n) {
         if (n == null) {
-            throw new ExpressionVisitorError("null node");
+            throw new BadCodeException("null node");
         }
-        switch (n.getType()) {
-            case TT_VAR:
-                Integer c = list.get(n.getVar());
-                if (c == null) {
-                    throw new ExpressionVisitorError("Undefined var: "+n.getVar());
-                } else {
-                    return c;
-                }
-            case TT_INT:
-                return new Integer(n.getVar());
+        Integer c = list.get(n.getVar());
+        if (c == null) {
+            throw new CalcEvaluatorException("Undefined var: " + n.getVar());
+        } else {
+            return c;
+        }
+    }
 
-            default:
-                throw new ExpressionVisitorError("NodeVar: not expected type "+LexerToken.typeToStr(n.getType()));
-        }
+    @Override
+    public Integer visitNumber(ParserNodeNumber n) {
+        return Integer.parseInt(n.getNumberStr());
     }
 }

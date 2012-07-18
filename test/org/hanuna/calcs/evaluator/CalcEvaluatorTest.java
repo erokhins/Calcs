@@ -3,6 +3,8 @@ package org.hanuna.calcs.evaluator;
 import org.hanuna.calcs.parser.*;
 import org.junit.Test;
 
+import java.io.IOException;
+
 import static org.junit.Assert.*;
 
 /**
@@ -11,17 +13,17 @@ import static org.junit.Assert.*;
 public class CalcEvaluatorTest {
 
     public void runParserEvaluatorTest(String s, int k) {
-        Lexer l = new Lexer(s, true);
-        try{
-            ListOfVars list = Parser.parseListOfVars(l);
+        try {
+            Lexer l = new Lexer(s);
+            TableVars list = ParserTableVars.parserTableVars(l);
             ParserNode n = Parser.parseExpression(l);
-            try{
-                int x = n.accept(new CalcEvaluator(list));
-                assertEquals(x, k);
-            } catch (ExpressionVisitorError e) {
-                fail(e.getMessage());
-            }
-        } catch (ParserError e) {
+            int x = n.accept(new CalcEvaluator(list));
+            assertEquals(x, k);
+        } catch (ParserException e) {
+            fail(e.getMessage());
+        } catch (IOException e) {
+            fail(e.getMessage());
+        } catch (CalcEvaluatorException e) {
             fail(e.getMessage());
         }
     }

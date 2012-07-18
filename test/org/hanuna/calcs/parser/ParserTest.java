@@ -1,9 +1,13 @@
 package org.hanuna.calcs.parser;
 
+import org.hanuna.calcs.evaluator.CalcEvaluatorException;
 import org.hanuna.calcs.evaluator.StringEvaluator;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import java.io.IOException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * @author erokhins
@@ -14,25 +18,29 @@ public class ParserTest {
     @Test
     public void testParseListOfVars() {
         String s = "a = 4 b = -3 c = 0";
-        Lexer l = new Lexer(s, true);
-        try{
-            ListOfVars list = Parser.parseListOfVars(l);
+        try {
+            Lexer l = new Lexer(s);
+            TableVars list = ParserTableVars.parserTableVars(l);
             assertEquals(list.get("a"), (Integer) 4);
             assertEquals(list.get("b"), (Integer) (-3));
             assertEquals(list.get("c"), (Integer) 0);
             assertEquals(list.get("bb"), null);
-        } catch (ParserError e) {
+        } catch (ParserException e) {
+            fail(e.getMessage());
+        } catch (IOException e) {
             fail(e.getMessage());
         }
     }
 
     public void runTestErrorsListOfVars(String inputS, String errorS) {
-        Lexer l = new Lexer(inputS, true);
-        try{
-            Parser.parseListOfVars(l);
+        try {
+            Lexer l = new Lexer(inputS);
+            ParserTableVars.parserTableVars(l);
             fail();
-        } catch (ParserError e) {
+        } catch (ParserException e) {
             assertEquals(e.getMessage(), errorS);
+        } catch (IOException e) {
+            fail(e.getMessage());
         }
     }
 
@@ -44,16 +52,18 @@ public class ParserTest {
 
 
     public void runTestParseExpression(String inputS, String result) {
-        Lexer l = new Lexer(inputS, true);
-        try{
+        try {
+            Lexer l = new Lexer(inputS);
             ParserNode n = Parser.parseExpression(l);
-            try{
+            try {
                 String s = n.accept(new StringEvaluator());
                 assertEquals(s, result);
-            } catch (ExpressionVisitorError e) {
+            } catch (CalcEvaluatorException e) {
                 fail(e.getMessage());
             }
-        } catch (ParserError e) {
+        } catch (ParserException e) {
+            fail(e.getMessage());
+        } catch (IOException e) {
             fail(e.getMessage());
         }
     }

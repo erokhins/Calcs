@@ -1,5 +1,6 @@
 package org.hanuna.calcs.evaluator;
 
+import org.hanuna.calcs.BadCodeException;
 import org.hanuna.calcs.parser.*;
 
 /**
@@ -8,29 +9,37 @@ import org.hanuna.calcs.parser.*;
 public class StringEvaluator implements ExpressionVisitor<String> {
 
     @Override
-    public String visitBin(ParserNodeBin n) throws ExpressionVisitorError {
+    public String visitBin(ParserNodeBinary n) {
         if (n == null) {
-           throw new ExpressionVisitorError("null node");
+           throw new BadCodeException("null node");
         }
         return  "{" + n.getLeft().accept(this) + " "
-                + LexerToken.typeToStr(n.getType()) + " "
+                + n.getType().toString() + " "
                 + n.getRight().accept(this) + "}";
     }
 
     @Override
-    public String visitUn(ParserNodeUn n) throws ExpressionVisitorError {
+    public String visitUn(ParserNodeUnary n) {
         if (n == null) {
-            throw new ExpressionVisitorError("null node");
+            throw new BadCodeException("null node");
         }
-        return  "{" + LexerToken.typeToStr(n.getType()) + " "
-                + n.getLeft().accept(this) + "}";
+        return  "{" + n.getType().toString() + " "
+                + n.getOperand().accept(this) + "}";
     }
 
     @Override
-    public String visitVar(ParserNodeVar n) throws ExpressionVisitorError {
+    public String visitVar(ParserNodeVar n) {
         if (n == null) {
-            throw new ExpressionVisitorError("null node");
+            throw new BadCodeException("null node");
         }
-        return LexerToken.typeToStr(n.getType()) + ":" + n.getVar();
+        return LexerTokenType.VAR.toString() + ":" + n.getVar();
+    }
+
+    @Override
+    public String visitNumber(ParserNodeNumber n) {
+        if (n == null) {
+            throw new BadCodeException("null node");
+        }
+        return LexerTokenType.NUMBER.toString() + ":" + n.getNumberStr();
     }
 }

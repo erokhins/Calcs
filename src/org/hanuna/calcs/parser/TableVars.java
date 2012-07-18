@@ -5,11 +5,11 @@ import java.util.HashMap;
 /**
  * @author erokhins
  */
-public class ListOfVars {
-    private final HashMap<String,Integer> vars;
+public class TableVars {
+    private final HashMap<String, Integer> vars;
 
-    public ListOfVars() {
-        this.vars = new HashMap();
+    public TableVars() {
+        this.vars = new HashMap<String, Integer>();
     }
 
     public Integer get(String s) {

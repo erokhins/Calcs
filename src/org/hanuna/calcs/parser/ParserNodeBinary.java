@@ -3,20 +3,20 @@ package org.hanuna.calcs.parser;
 /**
  * @author erokhins
  */
-public class ParserNodeBin implements ParserNode {
+public class ParserNodeBinary implements ParserNode {
     private ParserNode left;
     private ParserNode right;
-    private int type;
+    private LexerTokenType type;
 
 
-    public ParserNodeBin(ParserNode left, ParserNode right, int type){
+    public ParserNodeBinary(ParserNode left, ParserNode right, LexerTokenType type) {
         this.left = left;
         this.right = right;
         this.type = type;
     }
 
 
-    public int getType() {
+    public LexerTokenType getType() {
         return type;
     }
 
@@ -30,7 +30,7 @@ public class ParserNodeBin implements ParserNode {
 
 
     @Override
-    public <T> T accept(ExpressionVisitor<T> visitor) throws ExpressionVisitorError {
+    public <T> T accept(ExpressionVisitor<T> visitor) {
         return visitor.visitBin(this);
     }
 }
