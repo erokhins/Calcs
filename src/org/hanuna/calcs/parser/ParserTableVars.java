@@ -8,8 +8,8 @@ import static org.hanuna.calcs.parser.LexerTokenType.*;
  */
 public class ParserTableVars {
 
-    public static TableVars parserTableVars(Lexer l) throws ParserException, IOException {
-        TableVars list = new TableVars();
+    public static IntegerVarTable parserTableVars(Lexer l) throws ParserException, IOException {
+        IntegerVarTable list = new IntegerVarTable();
         while (l.getToken().getType() == VAR) {
             String s = l.getToken().getString();
             if (l.next().getType() != EQUAL) {

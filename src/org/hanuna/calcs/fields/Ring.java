@@ -11,10 +11,8 @@ public interface Ring<T> {
     boolean isUnityElement(T a);
 
     T add(T a, T b);
-    T subtract(T a, T b);
     T negative(T a);
 
     T mult(T a, T b);
-
-    String toStr(T a);
+    T parseNumber(String s);
 }

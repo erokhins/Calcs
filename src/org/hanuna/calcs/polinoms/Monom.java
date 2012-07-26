@@ -3,5 +3,8 @@ package org.hanuna.calcs.polinoms;
 /**
  * @author erokhins
  */
-public class Monom {
+public interface Monom<T> {
+
+    public PowerVariables getPowerVariables();
+    public T getValue();
 }

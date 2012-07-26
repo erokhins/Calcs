@@ -16,7 +16,7 @@ public class FieldRealNumber implements Field<Double> {
 
     @Override
     public boolean isZero(Double a) {
-        return a == 0;
+        return a == 0.0;
     }
 
     @Override
@@ -29,10 +29,7 @@ public class FieldRealNumber implements Field<Double> {
         return a + b;
     }
 
-    @Override
-    public Double subtract(Double a, Double b) {
-        return a - b;
-    }
+
 
     @Override
     public Double negative(Double a) {
@@ -45,12 +42,10 @@ public class FieldRealNumber implements Field<Double> {
     }
 
     @Override
-    public Double divide(Double a, Double b) throws FieldCalculateException {
-        if (b == 0) {
-            throw new FieldCalculateException("divide by zero!");
-        }
-        return a / b;
+    public Double parseNumber(String s) {
+        return Double.parseDouble(s);
     }
+
 
     @Override
     public Double inverse(Double a) throws FieldCalculateException {
@@ -60,8 +55,5 @@ public class FieldRealNumber implements Field<Double> {
         return 1 / a;
     }
 
-    @Override
-    public String toStr(Double a) {
-        return "" + a;
-    }
+
 }

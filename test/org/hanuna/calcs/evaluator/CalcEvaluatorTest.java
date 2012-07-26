@@ -1,5 +1,6 @@
 package org.hanuna.calcs.evaluator;
 
+import org.hanuna.calcs.fields.IntegerRing;
 import org.hanuna.calcs.parser.*;
 import org.junit.Test;
 
@@ -15,9 +16,9 @@ public class CalcEvaluatorTest {
     public void runParserEvaluatorTest(String s, int k) {
         try {
             Lexer l = new Lexer(s);
-            TableVars list = ParserTableVars.parserTableVars(l);
+            IntegerVarTable list = ParserTableVars.parserTableVars(l);
             ParserNode n = Parser.parseExpression(l);
-            int x = n.accept(new CalcEvaluator(list));
+            int x = n.accept(new CalcEvaluator<Integer>(new IntegerRing()), list);
             assertEquals(x, k);
         } catch (ParserException e) {
             fail(e.getMessage());

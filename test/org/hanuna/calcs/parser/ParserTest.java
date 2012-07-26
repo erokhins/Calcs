@@ -20,7 +20,7 @@ public class ParserTest {
         String s = "a = 4 b = -3 c = 0";
         try {
             Lexer l = new Lexer(s);
-            TableVars list = ParserTableVars.parserTableVars(l);
+            IntegerVarTable list = ParserTableVars.parserTableVars(l);
             assertEquals(list.get("a"), (Integer) 4);
             assertEquals(list.get("b"), (Integer) (-3));
             assertEquals(list.get("c"), (Integer) 0);
@@ -56,7 +56,7 @@ public class ParserTest {
             Lexer l = new Lexer(inputS);
             ParserNode n = Parser.parseExpression(l);
             try {
-                String s = n.accept(new StringEvaluator());
+                String s = n.accept(new StringEvaluator(), null);
                 assertEquals(s, result);
             } catch (CalcEvaluatorException e) {
                 fail(e.getMessage());

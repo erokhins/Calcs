@@ -30,7 +30,7 @@ public class ParserNodeBinary implements ParserNode {
 
 
     @Override
-    public <T> T accept(ExpressionVisitor<T> visitor) {
-        return visitor.visitBin(this);
+    public <T, L> T accept(ExpressionVisitor<T, L> visitor, L l) {
+        return visitor.visitBin(this, l);
     }
 }

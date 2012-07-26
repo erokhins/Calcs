@@ -15,7 +15,7 @@ public class ParserNodeVar implements ParserNode {
     }
 
     @Override
-    public <T> T accept(ExpressionVisitor<T> visitor) {
-        return visitor.visitVar(this);
+    public <T, L> T accept(ExpressionVisitor<T, L> visitor, L l) {
+        return visitor.visitVar(this, l);
     }
 }

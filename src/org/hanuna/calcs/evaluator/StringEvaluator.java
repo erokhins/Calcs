@@ -6,29 +6,29 @@ import org.hanuna.calcs.parser.*;
 /**
  * @author erokhins
  */
-public class StringEvaluator implements ExpressionVisitor<String> {
+public class StringEvaluator implements ExpressionVisitor<String, Object> {
 
     @Override
-    public String visitBin(ParserNodeBinary n) {
+    public String visitBin(ParserNodeBinary n, Object o) {
         if (n == null) {
            throw new BadCodeException("null node");
         }
-        return  "{" + n.getLeft().accept(this) + " "
+        return  "{" + n.getLeft().accept(this, o) + " "
                 + n.getType().toString() + " "
-                + n.getRight().accept(this) + "}";
+                + n.getRight().accept(this, o) + "}";
     }
 
     @Override
-    public String visitUn(ParserNodeUnary n) {
+    public String visitUn(ParserNodeUnary n, Object o) {
         if (n == null) {
             throw new BadCodeException("null node");
         }
         return  "{" + n.getType().toString() + " "
-                + n.getOperand().accept(this) + "}";
+                + n.getOperand().accept(this, 0) + "}";
     }
 
     @Override
-    public String visitVar(ParserNodeVar n) {
+    public String visitVar(ParserNodeVar n, Object o) {
         if (n == null) {
             throw new BadCodeException("null node");
         }
@@ -36,7 +36,7 @@ public class StringEvaluator implements ExpressionVisitor<String> {
     }
 
     @Override
-    public String visitNumber(ParserNodeNumber n) {
+    public String visitNumber(ParserNodeNumber n, Object o) {
         if (n == null) {
             throw new BadCodeException("null node");
         }

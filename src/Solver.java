@@ -44,7 +44,6 @@ public class Solver {
             System.err.println(e.getMessage());
         }
 
-//        System.out.println(m.getRow(1));
 
     }
 }

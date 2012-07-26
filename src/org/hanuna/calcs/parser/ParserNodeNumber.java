@@ -16,7 +16,7 @@ public class ParserNodeNumber implements ParserNode {
 
 
     @Override
-    public <T> T accept(ExpressionVisitor<T> visitor) {
-        return visitor.visitNumber(this);
+    public <T, L> T accept(ExpressionVisitor<T, L> visitor, L l) {
+        return visitor.visitNumber(this, l);
     }
 }

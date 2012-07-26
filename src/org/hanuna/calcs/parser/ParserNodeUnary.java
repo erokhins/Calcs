@@ -21,7 +21,7 @@ public class ParserNodeUnary implements ParserNode {
     }
 
     @Override
-    public <T> T accept(ExpressionVisitor<T> visitor) {
-        return visitor.visitUn(this);
+    public <T, L> T accept(ExpressionVisitor<T, L> visitor, L l) {
+        return visitor.visitUn(this, l);
     }
 }
