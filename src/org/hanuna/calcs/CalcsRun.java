@@ -1,9 +1,15 @@
 package org.hanuna.calcs;
 
-import org.hanuna.calcs.evaluator.CalcEvaluator;
 import org.hanuna.calcs.evaluator.CalcEvaluatorException;
+import org.hanuna.calcs.evaluator.RingEvaluator;
 import org.hanuna.calcs.fields.IntegerRing;
-import org.hanuna.calcs.parser.*;
+import org.hanuna.calcs.fields.Ring;
+import org.hanuna.calcs.lexer.FlexLexer;
+import org.hanuna.calcs.parser.Parser;
+import org.hanuna.calcs.parser.ParserException;
+import org.hanuna.calcs.parser.ParserTableVars;
+import org.hanuna.calcs.syntaxtree.SyntaxTreeNode;
+import org.hanuna.calcs.vartable.IntegerVarTable;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -15,12 +21,12 @@ public class CalcsRun {
 
     public static Integer calcsRun(Reader r) {
         try {
-            Lexer l = new Lexer(r);
+            FlexLexer l = new FlexLexer(r);
             IntegerVarTable table = ParserTableVars.parserTableVars(l);
-            ParserNode n = Parser.parseExpression(l);
+            SyntaxTreeNode n = Parser.parseExpression(l);
 
             try {
-                CalcEvaluator<Integer> ce = new CalcEvaluator<Integer>(new IntegerRing());
+                RingEvaluator<Integer, Ring<Integer>> ce = new RingEvaluator<Integer, Ring<Integer>>(new IntegerRing());
                 int k = n.accept(ce, table);
                 return k;
             } catch (CalcEvaluatorException e) {

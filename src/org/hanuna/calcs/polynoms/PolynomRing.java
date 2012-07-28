@@ -1,31 +1,32 @@
-package org.hanuna.calcs.polinoms;
+package org.hanuna.calcs.polynoms;
 
 import org.hanuna.calcs.fields.Ring;
 
 /**
  * @author erokhins
  */
-public class PolinomRing<T> implements Ring<Polinom<T>> {
+public class PolynomRing<T> implements Ring<Polynom<T>> {
 
     private Ring<T> ring;
-    public PolinomRing(Ring<T> ring) {
+
+    public PolynomRing(Ring<T> ring) {
         this.ring = ring;
     }
 
     @Override
-    public Polinom<T> getZero() {
-        ListMonom<T> m = new ListMonom<T>(ListPowerVariables.getEmpty(), ring.getZero());
-        return new ListPolinom<T>(m);
+    public Polynom<T> getZero() {
+        Monom<T> m = new Monom<T>(ListPowerVariables.EMPTY, ring.getZero());
+        return new ListPolynom<T>(m);
     }
 
     @Override
-    public Polinom<T> getUnityElement() {
-        ListMonom<T> m = new ListMonom<T>(ListPowerVariables.getEmpty(), ring.getUnityElement());
-        return new ListPolinom<T>(m);
+    public Polynom<T> getUnityElement() {
+        Monom<T> m = new Monom<T>(ListPowerVariables.EMPTY, ring.getUnityElement());
+        return new ListPolynom<T>(m);
     }
 
     @Override
-    public boolean isZero(Polinom<T> a) {
+    public boolean isZero(Polynom<T> a) {
         boolean t = true;
         for (int i = 0; i < a.size(); i++) {
             T e = a.getMonom(i).getValue();
@@ -36,13 +37,12 @@ public class PolinomRing<T> implements Ring<Polinom<T>> {
     }
 
     @Override
-    public boolean isUnityElement(Polinom<T> a) {
+    public boolean isUnityElement(Polynom<T> a) {
         boolean t = true;
-        PowerVariables empty = ListPowerVariables.getEmpty();
         T e = ring.getZero();
         for (int i = 0; i < a.size(); i++) {
             Monom<T> m = a.getMonom(i);
-            if (empty.equals(m.getPowerVariables())) {
+            if (ListPowerVariables.EMPTY.equals(m.getPowerVariables())) {
                 e = ring.add(e, m.getValue());
             } else {
                 t &= ring.isZero(m.getValue());
@@ -52,8 +52,8 @@ public class PolinomRing<T> implements Ring<Polinom<T>> {
     }
 
     @Override
-    public Polinom<T> add(final Polinom<T> a, final Polinom<T> b) {
-        return new Polinom<T>() {
+    public Polynom<T> add(final Polynom<T> a, final Polynom<T> b) {
+        return new Polynom<T>() {
             @Override
             public int size() {
                 return a.size() + b.size();
@@ -76,8 +76,8 @@ public class PolinomRing<T> implements Ring<Polinom<T>> {
 
 
     @Override
-    public Polinom<T> negative(final Polinom<T> a) {
-        return new Polinom<T>() {
+    public Polynom<T> negative(final Polynom<T> a) {
+        return new Polynom<T>() {
             @Override
             public int size() {
                 return a.size();
@@ -87,19 +87,19 @@ public class PolinomRing<T> implements Ring<Polinom<T>> {
             public Monom<T> getMonom(int numberMonom) {
                 final Monom<T> m = a.getMonom(numberMonom);
 
-                return new ListMonom<T>(m.getPowerVariables(), m.getValue());
+                return new Monom<T>(m.getPowerVariables(), m.getValue());
             }
         };
     }
 
     @Override
-    public Polinom<T> mult(final Polinom<T> a, final Polinom<T> b) {
+    public Polynom<T> mult(final Polynom<T> a, final Polynom<T> b) {
         return mult(a, b, false);
     }
 
 
-    public Polinom<T> mult(final Polinom<T> a, final Polinom<T> b, boolean linked) {
-        Polinom<T> p = new Polinom<T>() {
+    public Polynom<T> mult(final Polynom<T> a, final Polynom<T> b, boolean linked) {
+        Polynom<T> p = new Polynom<T>() {
             @Override
             public int size() {
                 return a.size() * b.size();
@@ -110,21 +110,21 @@ public class PolinomRing<T> implements Ring<Polinom<T>> {
                 int an = numberMonom % a.size();
                 int bn = (numberMonom - an) / b.size();
                 Monom<T> am = a.getMonom(an);
-                Monom<T> bm = a.getMonom(bn);
+                Monom<T> bm = b.getMonom(bn);
                 T v = ring.mult(am.getValue(), bm.getValue());
 
                 PowerVariables pv = ListPowerVariables.mult(am.getPowerVariables(), bm.getPowerVariables());
-                return new ListMonom<T>(pv, v);
+                return new Monom<T>(pv, v);
             }
         };
-        return linked ? p : new ListPolinom<T>(p);
+        return linked ? p : new ListPolynom<T>(p);
     }
 
     @Override
-    public Polinom<T> parseNumber(String s) {
+    public Polynom<T> parseNumber(String s) {
         T v = ring.parseNumber(s);
-        Monom<T> m = new ListMonom<T>(ListPowerVariables.getEmpty(), v);
-        return new ListPolinom<T>(m);
+        Monom<T> m = new Monom<T>(ListPowerVariables.EMPTY, v);
+        return new ListPolynom<T>(m);
     }
 
 }

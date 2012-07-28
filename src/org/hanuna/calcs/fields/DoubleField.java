@@ -3,7 +3,7 @@ package org.hanuna.calcs.fields;
 /**
  * @author erokhins
  */
-public class FieldRealNumber implements Field<Double> {
+public class DoubleField implements Field<Double> {
     @Override
     public Double getZero() {
         return 0.0;

@@ -1,12 +1,14 @@
-package org.hanuna.calcs.parser;
+package org.hanuna.calcs.syntaxtree;
+
+import org.hanuna.calcs.parser.ExpressionVisitor;
 
 /**
  * @author erokhins
  */
-public class ParserNodeVar implements ParserNode {
+public class SyntaxTreeNodeVar implements SyntaxTreeNode {
     private String var;
 
-    public ParserNodeVar(String var) {
+    public SyntaxTreeNodeVar(String var) {
         this.var = var;
     }
 

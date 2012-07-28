@@ -1,28 +1,37 @@
 package org.hanuna.calcs.evaluator;
 
 import org.hanuna.calcs.BadCodeException;
-import org.hanuna.calcs.fields.Field;
 import org.hanuna.calcs.fields.Ring;
-import org.hanuna.calcs.parser.*;
+import org.hanuna.calcs.parser.ExpressionVisitor;
+import org.hanuna.calcs.lexer.LexerTokenType;
+import org.hanuna.calcs.syntaxtree.SyntaxTreeNodeBinary;
+import org.hanuna.calcs.syntaxtree.SyntaxTreeNodeNumber;
+import org.hanuna.calcs.syntaxtree.SyntaxTreeNodeUnary;
+import org.hanuna.calcs.syntaxtree.SyntaxTreeNodeVar;
+import org.hanuna.calcs.vartable.VarTable;
 
 /**
  * @author erokhins
  */
-public class CalcEvaluator<T> implements ExpressionVisitor<T, VarTable<T>> {
-    private final Ring<T> ring;
+public class RingEvaluator<T, R extends Ring<T>> implements ExpressionVisitor<T, VarTable<T>> {
+    protected final R ring;
 
-    public CalcEvaluator(Ring<T> ring) {
+    public RingEvaluator(R ring) {
         this.ring = ring;
     }
 
     @Override
-    public T visitBin(ParserNodeBinary n, VarTable<T> l) {
+    public T visitBin(SyntaxTreeNodeBinary n, VarTable<T> l) {
         if (n == null) {
             throw new BadCodeException("null node");
         }
         T left = n.getLeft().accept(this, l);
         T right = n.getRight().accept(this, l);
-        switch (n.getType()) {
+        return applyArithmeticOperation(n.getType(), left, right);
+    }
+
+    protected T applyArithmeticOperation(LexerTokenType type, T left, T right) {
+        switch (type) {
             case PLUS:
                 return ring.add(left, right);
 
@@ -32,20 +41,13 @@ public class CalcEvaluator<T> implements ExpressionVisitor<T, VarTable<T>> {
             case MULT:
                 return ring.mult(left, right);
 
-            case DIV:
-                try {
-                    Field<T> field = (Field<T>) ring;
-                    return field.mult(left, field.inverse(right));
-                } catch (Exception e) {
-                    throw new CalcEvaluatorException("divide not supported");
-                }
             default:
-                throw new CalcEvaluatorException("NodeBin: not expected type " + n.getType().toString());
+                throw new CalcEvaluatorException("NodeBin: not expected type " + type);
         }
     }
 
     @Override
-    public T visitUn(ParserNodeUnary n, VarTable<T> l) {
+    public T visitUn(SyntaxTreeNodeUnary n, VarTable<T> l) {
         if (n == null) {
             throw new BadCodeException("null node");
         }
@@ -57,12 +59,12 @@ public class CalcEvaluator<T> implements ExpressionVisitor<T, VarTable<T>> {
                 return ring.negative(n.getOperand().accept(this, l));
 
             default:
-                throw new CalcEvaluatorException("NodeUn: not expected type " + n.getType().toString());
+                throw new CalcEvaluatorException("NodeUn: not expected type " + n.getType());
         }
     }
 
     @Override
-    public T visitVar(ParserNodeVar n, VarTable<T> l) {
+    public T visitVar(SyntaxTreeNodeVar n, VarTable<T> l) {
         if (n == null) {
             throw new BadCodeException("null node");
         }
@@ -75,7 +77,8 @@ public class CalcEvaluator<T> implements ExpressionVisitor<T, VarTable<T>> {
     }
 
     @Override
-    public T visitNumber(ParserNodeNumber n, VarTable<T> l) {
+    public T visitNumber(SyntaxTreeNodeNumber n, VarTable<T> l) {
         return ring.parseNumber(n.getNumberStr());
     }
+
 }

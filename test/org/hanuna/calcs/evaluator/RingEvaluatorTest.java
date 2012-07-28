@@ -1,7 +1,11 @@
 package org.hanuna.calcs.evaluator;
 
 import org.hanuna.calcs.fields.IntegerRing;
+import org.hanuna.calcs.fields.Ring;
+import org.hanuna.calcs.lexer.FlexLexer;
 import org.hanuna.calcs.parser.*;
+import org.hanuna.calcs.syntaxtree.SyntaxTreeNode;
+import org.hanuna.calcs.vartable.IntegerVarTable;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -11,14 +15,14 @@ import static org.junit.Assert.*;
 /**
  * @author erokhins
  */
-public class CalcEvaluatorTest {
+public class RingEvaluatorTest {
 
     public void runParserEvaluatorTest(String s, int k) {
         try {
-            Lexer l = new Lexer(s);
+            FlexLexer l = new FlexLexer(s);
             IntegerVarTable list = ParserTableVars.parserTableVars(l);
-            ParserNode n = Parser.parseExpression(l);
-            int x = n.accept(new CalcEvaluator<Integer>(new IntegerRing()), list);
+            SyntaxTreeNode n = Parser.parseExpression(l);
+            int x = n.accept(new RingEvaluator<Integer, Ring<Integer>>(new IntegerRing()), list);
             assertEquals(x, k);
         } catch (ParserException e) {
             fail(e.getMessage());

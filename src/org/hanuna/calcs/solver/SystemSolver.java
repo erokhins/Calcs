@@ -8,9 +8,11 @@ import org.hanuna.calcs.matrix.*;
  */
 public class SystemSolver {
 
-    public static <T> MatrixColumn<T> solveLinearSystem(final MatrixFunction<T> matrixOfSystem,
-                                                        final MatrixColumn<T> constColumn, final Field<T> field)
-            throws SystemSolverException {
+    public static <T> MatrixColumn<T> solveLinearSystem(
+            final MatrixFunction<T> matrixOfSystem,
+            final MatrixColumn<T> constColumn,
+            final Field<T> field
+    ) throws SystemSolverException {
 
         if (matrixOfSystem.height() != matrixOfSystem.width()) {
             throw new IllegalArgumentException("count vars = " + matrixOfSystem.width()

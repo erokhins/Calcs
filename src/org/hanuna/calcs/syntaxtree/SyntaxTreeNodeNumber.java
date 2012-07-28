@@ -1,12 +1,14 @@
-package org.hanuna.calcs.parser;
+package org.hanuna.calcs.syntaxtree;
+
+import org.hanuna.calcs.parser.ExpressionVisitor;
 
 /**
  * @author erokhins
  */
-public class ParserNodeNumber implements ParserNode {
+public class SyntaxTreeNodeNumber implements SyntaxTreeNode {
     private String numberStr;
 
-    public ParserNodeNumber(String numberStr) {
+    public SyntaxTreeNodeNumber(String numberStr) {
         this.numberStr = numberStr;
     }
 

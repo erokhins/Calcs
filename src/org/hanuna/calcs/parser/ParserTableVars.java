@@ -1,14 +1,17 @@
 package org.hanuna.calcs.parser;
 
+import org.hanuna.calcs.lexer.FlexLexer;
+import org.hanuna.calcs.vartable.IntegerVarTable;
+
 import java.io.IOException;
-import static org.hanuna.calcs.parser.LexerTokenType.*;
+import static org.hanuna.calcs.lexer.LexerTokenType.*;
 
 /**
  * @author erokhins
  */
 public class ParserTableVars {
 
-    public static IntegerVarTable parserTableVars(Lexer l) throws ParserException, IOException {
+    public static IntegerVarTable parserTableVars(FlexLexer l) throws ParserException, IOException {
         IntegerVarTable list = new IntegerVarTable();
         while (l.getToken().getType() == VAR) {
             String s = l.getToken().getString();

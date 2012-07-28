@@ -2,6 +2,9 @@ package org.hanuna.calcs.parser;
 
 import org.hanuna.calcs.evaluator.CalcEvaluatorException;
 import org.hanuna.calcs.evaluator.StringEvaluator;
+import org.hanuna.calcs.lexer.FlexLexer;
+import org.hanuna.calcs.syntaxtree.SyntaxTreeNode;
+import org.hanuna.calcs.vartable.IntegerVarTable;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -19,7 +22,7 @@ public class ParserTest {
     public void testParseListOfVars() {
         String s = "a = 4 b = -3 c = 0";
         try {
-            Lexer l = new Lexer(s);
+            FlexLexer l = new FlexLexer(s);
             IntegerVarTable list = ParserTableVars.parserTableVars(l);
             assertEquals(list.get("a"), (Integer) 4);
             assertEquals(list.get("b"), (Integer) (-3));
@@ -34,7 +37,7 @@ public class ParserTest {
 
     public void runTestErrorsListOfVars(String inputS, String errorS) {
         try {
-            Lexer l = new Lexer(inputS);
+            FlexLexer l = new FlexLexer(inputS);
             ParserTableVars.parserTableVars(l);
             fail();
         } catch (ParserException e) {
@@ -53,8 +56,8 @@ public class ParserTest {
 
     public void runTestParseExpression(String inputS, String result) {
         try {
-            Lexer l = new Lexer(inputS);
-            ParserNode n = Parser.parseExpression(l);
+            FlexLexer l = new FlexLexer(inputS);
+            SyntaxTreeNode n = Parser.parseExpression(l);
             try {
                 String s = n.accept(new StringEvaluator(), null);
                 assertEquals(s, result);

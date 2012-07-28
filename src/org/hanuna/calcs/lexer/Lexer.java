@@ -1,10 +1,10 @@
-package org.hanuna.calcs.parser;
+package org.hanuna.calcs.lexer;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-import static org.hanuna.calcs.parser.LexerToken.*;
+import static org.hanuna.calcs.lexer.LexerToken.*;
 
 /**
  * @author erokhins
@@ -65,11 +65,11 @@ public class Lexer {
 
             default:
                 if (itIsLetter(currentChar)) {
-                    currentToken = LexerToken.newVar(readVar());
+                    currentToken = newVar(readVar());
                 } else if (Character.isDigit(currentChar)) {
-                    currentToken = LexerToken.newNumber(readNumber());
+                    currentToken = newNumber(readNumber());
                 } else {
-                    currentToken = LexerToken.newError("" + (char) this.currentChar);
+                    currentToken = newError("" + (char) this.currentChar);
                 }
                 break;
         }

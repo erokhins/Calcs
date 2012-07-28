@@ -1,6 +1,6 @@
-package org.hanuna.calcs.parser;
+package org.hanuna.calcs.lexer;
 
-import static org.hanuna.calcs.parser.LexerTokenType.*;
+import static org.hanuna.calcs.lexer.LexerTokenType.*;
 
 
 /**
@@ -44,11 +44,11 @@ public class LexerToken {
     }
 
     public static LexerToken newVar(String nameVar) {
-        return new LexerToken(LexerTokenType.VAR, nameVar);
+        return new LexerToken(VAR, nameVar);
     }
 
     public static LexerToken newNumber(String numberStr) {
-        return new LexerToken(LexerTokenType.NUMBER, numberStr);
+        return new LexerToken(NUMBER, numberStr);
     }
 
     public static LexerToken newError(String s) {

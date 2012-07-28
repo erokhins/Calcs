@@ -1,13 +1,16 @@
-package org.hanuna.calcs.parser;
+package org.hanuna.calcs.syntaxtree;
+
+import org.hanuna.calcs.parser.ExpressionVisitor;
+import org.hanuna.calcs.lexer.LexerTokenType;
 
 /**
  * @author erokhins
  */
-public class ParserNodeUnary implements ParserNode {
+public class SyntaxTreeNodeUnary implements SyntaxTreeNode {
     private LexerTokenType type;
-    private ParserNode operand;
+    private SyntaxTreeNode operand;
 
-    public ParserNodeUnary(LexerTokenType type, ParserNode operand) {
+    public SyntaxTreeNodeUnary(LexerTokenType type, SyntaxTreeNode operand) {
         this.type = type;
         this.operand = operand;
     }
@@ -16,7 +19,7 @@ public class ParserNodeUnary implements ParserNode {
         return type;
     }
 
-    public ParserNode getOperand() {
+    public SyntaxTreeNode getOperand() {
         return operand;
     }
 

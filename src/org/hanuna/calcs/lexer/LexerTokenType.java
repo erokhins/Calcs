@@ -1,4 +1,4 @@
-package org.hanuna.calcs.parser;
+package org.hanuna.calcs.lexer;
 
 /**
  * @author erokhins

@@ -1,7 +1,9 @@
 package org.hanuna.calcs.evaluator;
 
 import org.hanuna.calcs.BadCodeException;
-import org.hanuna.calcs.parser.*;
+import org.hanuna.calcs.parser.ExpressionVisitor;
+import org.hanuna.calcs.lexer.LexerTokenType;
+import org.hanuna.calcs.syntaxtree.*;
 
 /**
  * @author erokhins
@@ -9,7 +11,7 @@ import org.hanuna.calcs.parser.*;
 public class StringEvaluator implements ExpressionVisitor<String, Object> {
 
     @Override
-    public String visitBin(ParserNodeBinary n, Object o) {
+    public String visitBin(SyntaxTreeNodeBinary n, Object o) {
         if (n == null) {
            throw new BadCodeException("null node");
         }
@@ -19,7 +21,7 @@ public class StringEvaluator implements ExpressionVisitor<String, Object> {
     }
 
     @Override
-    public String visitUn(ParserNodeUnary n, Object o) {
+    public String visitUn(SyntaxTreeNodeUnary n, Object o) {
         if (n == null) {
             throw new BadCodeException("null node");
         }
@@ -28,7 +30,7 @@ public class StringEvaluator implements ExpressionVisitor<String, Object> {
     }
 
     @Override
-    public String visitVar(ParserNodeVar n, Object o) {
+    public String visitVar(SyntaxTreeNodeVar n, Object o) {
         if (n == null) {
             throw new BadCodeException("null node");
         }
@@ -36,7 +38,7 @@ public class StringEvaluator implements ExpressionVisitor<String, Object> {
     }
 
     @Override
-    public String visitNumber(ParserNodeNumber n, Object o) {
+    public String visitNumber(SyntaxTreeNodeNumber n, Object o) {
         if (n == null) {
             throw new BadCodeException("null node");
         }

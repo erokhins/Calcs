@@ -1,4 +1,4 @@
-package org.hanuna.calcs.polinoms;
+package org.hanuna.calcs.polynoms;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,21 +6,25 @@ import java.util.List;
 /**
  * @author erokhins
  */
-public class ListPolinom<T> implements Polinom<T> {
+public class ListPolynom<T> implements Polynom<T> {
 
     private final List<Monom<T>> sumMonom;
 
 
-    public ListPolinom(Polinom<T> p) {
+    public ListPolynom(Polynom<T> p) {
         sumMonom = new ArrayList<Monom<T>>(p.size());
         for (int i = 0; i < p.size(); i++) {
             sumMonom.add(p.getMonom(i));
         }
     }
 
-    public ListPolinom(Monom<T> m) {
+    public ListPolynom(Monom<T> m) {
         sumMonom = new ArrayList<Monom<T>>(1);
         sumMonom.add(m);
+    }
+
+    public ListPolynom(int varNumber, T value) {
+        this(new Monom<T>(varNumber, value));
     }
 
     @Override

@@ -1,5 +1,8 @@
 package org.hanuna.calcs.parser;
 
+import org.hanuna.calcs.lexer.FlexLexer;
+import org.hanuna.calcs.lexer.LexerToken;
+import org.hanuna.calcs.lexer.LexerTokenType;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -16,9 +19,9 @@ public class LexerTest {
 
     public String lexerStringReturn(Reader r) throws IOException {
         StringBuilder s = new StringBuilder();
-        Lexer l = new Lexer(r);
+        FlexLexer l = new FlexLexer(r);
         LexerToken t = l.next();
-        while (!t.getType().isStopOrError()) {
+        while (t.getType() != LexerTokenType.STOP) {
             s.append(t.getType().toString() + ":" + t.getString() + " ");
             t = l.next();
         }
@@ -52,10 +55,10 @@ public class LexerTest {
     @Test
     public void testErrorSymbols() {
         runTest("asd%_2!",
-                "var:asd error:%");
+                "var:asd error:% var:_2 error:! end:");
 
         runTest("+-!",
-                "+: -: error:!");
+                "+: -: error:! end:");
     }
 
 
@@ -65,6 +68,13 @@ public class LexerTest {
                 "var:as number:12 number:2 number:2 end:");
     }
 
+    @Test
+    public void testNumbers() {
+        runTest("12.1 2. ",
+                "number:12.1 number:2 error:. end:");
+        runTest(".1 ",
+                "error:. number:1 end:");
+    }
 
 
 }

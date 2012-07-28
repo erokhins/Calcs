@@ -1,9 +1,13 @@
 package org.hanuna.calcs.parser;
 
 
+import org.hanuna.calcs.lexer.FlexLexer;
+import org.hanuna.calcs.lexer.LexerTokenType;
+import org.hanuna.calcs.syntaxtree.*;
+
 import java.io.IOException;
 
-import static org.hanuna.calcs.parser.LexerTokenType.*;
+import static org.hanuna.calcs.lexer.LexerTokenType.*;
 
 /**
  * @author erokhins
@@ -17,10 +21,11 @@ public class Parser {
    * M = F | F * M
    * F = (S) | Var | Int | + F
    * */
-    public static ParserNode parseExpression(Lexer l) throws ParserException, IOException {
+    public static SyntaxTreeNode parseExpression(FlexLexer l) throws ParserException, IOException {
         if (l.getTokenType() == RUN) {
             l.next();
-            ParserNode p = parseSum(l);
+
+            SyntaxTreeNode p = parseSum(l);
             if (l.getTokenType() != STOP) {
                 throw new ParserException("expected end of file, but found " + l.getToken().toString());
             } else {
@@ -31,7 +36,7 @@ public class Parser {
         }
     }
 
-    public static ParserNode parseSum(Lexer l) throws ParserException, IOException {
+    public static SyntaxTreeNode parseSum(FlexLexer l) throws ParserException, IOException {
         return parseSum(l, false);
     }
 
@@ -39,30 +44,30 @@ public class Parser {
      * change need for this: a-b+c -> {var:a - {var:b - var:c}}
      * a-b+c-d -> a-(b-c+d) -> a-(b-(c-d))
     */
-    public static ParserNode parseSum(Lexer l, boolean change) throws ParserException, IOException {
-        ParserNode left = parseMult(l);
+    public static SyntaxTreeNode parseSum(FlexLexer l, boolean change) throws ParserException, IOException {
+        SyntaxTreeNode left = parseMult(l);
         LexerTokenType type = l.getTokenType();
-        ParserNode right;
+        SyntaxTreeNode right;
 
         switch (type) {
             case PLUS:
                 l.next();
                 if (change) {
                     right = parseSum(l, !change);
-                    return new ParserNodeBinary(left, right, MINUS);
+                    return new SyntaxTreeNodeBinary(left, right, MINUS);
                 } else {
                     right = parseSum(l, change);
-                    return new ParserNodeBinary(left, right, PLUS);
+                    return new SyntaxTreeNodeBinary(left, right, PLUS);
                 }
 
             case MINUS:
                 l.next();
                 if (change) {
                     right = parseSum(l, change);
-                    return new ParserNodeBinary(left, right, PLUS);
+                    return new SyntaxTreeNodeBinary(left, right, PLUS);
                 } else {
                     right = parseSum(l, !change);
-                    return new ParserNodeBinary(left, right, MINUS);
+                    return new SyntaxTreeNodeBinary(left, right, MINUS);
                 }
 
             default:
@@ -73,34 +78,34 @@ public class Parser {
 
 
     // change: see parseSum
-    public static ParserNode parseMult(Lexer l) throws ParserException, IOException {
+    public static SyntaxTreeNode parseMult(FlexLexer l) throws ParserException, IOException {
         return parseMult(l, false);
     }
 
-    public static ParserNode parseMult(Lexer l, boolean change) throws ParserException, IOException {
-        ParserNode left = parseFactor(l);
+    public static SyntaxTreeNode parseMult(FlexLexer l, boolean change) throws ParserException, IOException {
+        SyntaxTreeNode left = parseFactor(l);
         LexerTokenType type = l.getTokenType();
-        ParserNode right;
+        SyntaxTreeNode right;
 
         switch (type) {
             case MULT:
                 l.next();
                 if (change) {
                     right = parseMult(l, !change);
-                    return new ParserNodeBinary(left, right, DIV);
+                    return new SyntaxTreeNodeBinary(left, right, DIV);
                 } else {
                     right = parseMult(l, change);
-                    return new ParserNodeBinary(left, right, MULT);
+                    return new SyntaxTreeNodeBinary(left, right, MULT);
                 }
 
             case DIV: {
                 l.next();
                 if (change) {
                     right = parseMult(l, change);
-                    return new ParserNodeBinary(left, right, MULT);
+                    return new SyntaxTreeNodeBinary(left, right, MULT);
                 } else {
                     right = parseMult(l, !change);
-                    return new ParserNodeBinary(left, right, DIV);
+                    return new SyntaxTreeNodeBinary(left, right, DIV);
                 }
             }
 
@@ -111,29 +116,29 @@ public class Parser {
     }
 
 
-    public static ParserNode parseFactor(Lexer l) throws ParserException, IOException {
+    public static SyntaxTreeNode parseFactor(FlexLexer l) throws ParserException, IOException {
         LexerTokenType type = l.getTokenType();
-        ParserNode left;
+        SyntaxTreeNode left;
         switch (type) {
             case VAR:
-                left = new ParserNodeVar(l.getToken().getString());
+                left = new SyntaxTreeNodeVar(l.getToken().getString());
                 l.next();
                 return left;
 
             case NUMBER:
-                left = new ParserNodeNumber(l.getToken().getString());
+                left = new SyntaxTreeNodeNumber(l.getToken().getString());
                 l.next();
                 return left;
 
             case PLUS:
                 l.next();
                 left = parseFactor(l);
-                return new ParserNodeUnary(PLUS, left);
+                return new SyntaxTreeNodeUnary(PLUS, left);
 
             case MINUS:
                 l.next();
                 left = parseFactor(l);
-                return new ParserNodeUnary(MINUS, left);
+                return new SyntaxTreeNodeUnary(MINUS, left);
 
             case BRACKET_OPEN:
                 l.next();
