@@ -6,14 +6,14 @@ import org.hanuna.calcs.parser.ExpressionVisitor;
  * @author erokhins
  */
 public class SyntaxTreeNodeNumber implements SyntaxTreeNode {
-    private String numberStr;
+    private double number;
 
-    public SyntaxTreeNodeNumber(String numberStr) {
-        this.numberStr = numberStr;
+    public SyntaxTreeNodeNumber(double number) {
+        this.number = number;
     }
 
-    public String getNumberStr() {
-        return numberStr;
+    public double getNumberStr() {
+        return number;
     }
 
 

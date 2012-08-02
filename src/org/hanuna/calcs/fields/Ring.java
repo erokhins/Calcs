@@ -14,5 +14,4 @@ public interface Ring<T> {
     T negative(T a);
 
     T mult(T a, T b);
-    T parseNumber(String s);
 }

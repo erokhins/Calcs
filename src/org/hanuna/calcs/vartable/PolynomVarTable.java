@@ -31,12 +31,11 @@ public class PolynomVarTable<T> implements VarTable<Polynom<T>> {
             k++;
         }
 
-        return new ListPolynom<T>(t, ring.getUnityElement());
+        return ListPolynom.singleVarPolynom(t, ring.getUnityElement());
     }
 
     @Override
     public void put(String name, Polynom<T> value) {
-        return;
     }
 
     public String varNumberToStr(int varNumber) {

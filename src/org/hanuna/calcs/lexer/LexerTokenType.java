@@ -32,6 +32,10 @@ public enum LexerTokenType {
         return this != VAR && this != NUMBER && this != ERROR;
     }
 
+    public boolean isSingleLetterType() {
+        return this != VAR && this != NUMBER;
+    }
+
     public boolean isStopOrError() {
         return this == STOP || this == ERROR;
     }

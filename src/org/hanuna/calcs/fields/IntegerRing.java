@@ -39,8 +39,4 @@ public class IntegerRing implements Ring<Integer> {
         return a * b;
     }
 
-    @Override
-    public Integer parseNumber(String s) {
-        return Integer.parseInt(s);
-    }
 }

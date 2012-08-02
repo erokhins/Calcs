@@ -6,13 +6,13 @@ import org.hanuna.calcs.matrix.*;
 /**
  * @author erokhins
  */
-public class SystemSolver {
+public class SolverSystem {
 
     public static <T> MatrixColumn<T> solveLinearSystem(
             final MatrixFunction<T> matrixOfSystem,
             final MatrixColumn<T> constColumn,
             final Field<T> field
-    ) throws SystemSolverException {
+    ) throws SolverSystemException {
 
         if (matrixOfSystem.height() != matrixOfSystem.width()) {
             throw new IllegalArgumentException("count vars = " + matrixOfSystem.width()
@@ -25,7 +25,7 @@ public class SystemSolver {
         final MatrixUtils<T> mu = new MatrixUtils<T>(field);
         T d = mu.determinant(matrixOfSystem);
         if (field.isZero(d)) {
-            throw new SystemSolverException("determinant matrix of system is zero!");
+            throw new SolverSystemException("determinant matrix of system is zero!");
         }
 
         final T inverseD = field.inverse(d);
@@ -46,4 +46,5 @@ public class SystemSolver {
         };
         return new ListMatrixColumn<T>(mlf);
     }
+
 }

@@ -1,4 +1,4 @@
-import org.hanuna.calcs.CalcsRun;
+import org.hanuna.calcs.RunCalcs;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -15,7 +15,7 @@ public class Calc {
             }
             BufferedReader f = new BufferedReader(new FileReader(args[0]));
 
-            System.out.println(CalcsRun.calcsRun(f));
+            System.out.println(RunCalcs.calcsRun(f));
 
         } catch (FileNotFoundException e) {
             System.err.println("File '" + args[0] + "' not found");

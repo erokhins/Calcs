@@ -1,11 +1,9 @@
 package org.hanuna.calcs.evaluator;
 
-import org.hanuna.calcs.BaseRuntimeException;
-
 /**
  * @author erokhins
  */
-public class CalcEvaluatorException extends BaseRuntimeException {
+public class CalcEvaluatorException extends RuntimeException {
     public CalcEvaluatorException(String s) {
         super(s);
     }

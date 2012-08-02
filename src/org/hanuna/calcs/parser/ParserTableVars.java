@@ -1,7 +1,7 @@
 package org.hanuna.calcs.parser;
 
-import org.hanuna.calcs.lexer.FlexLexer;
-import org.hanuna.calcs.vartable.IntegerVarTable;
+import org.hanuna.calcs.lexer.Lexer;
+import org.hanuna.calcs.vartable.DoubleVarTable;
 
 import java.io.IOException;
 import static org.hanuna.calcs.lexer.LexerTokenType.*;
@@ -11,8 +11,8 @@ import static org.hanuna.calcs.lexer.LexerTokenType.*;
  */
 public class ParserTableVars {
 
-    public static IntegerVarTable parserTableVars(FlexLexer l) throws ParserException, IOException {
-        IntegerVarTable list = new IntegerVarTable();
+    public static DoubleVarTable parserTableVars(Lexer l) throws ParserException, IOException {
+        DoubleVarTable list = new DoubleVarTable();
         while (l.getToken().getType() == VAR) {
             String s = l.getToken().getString();
             if (l.next().getType() != EQUAL) {
@@ -37,7 +37,7 @@ public class ParserTableVars {
                 throw new ParserException("expected number, but found " + l.getToken().toString());
             }
 
-            int k = sign * Integer.parseInt(l.getToken().getString());
+            double k = sign * Double.parseDouble(l.getToken().getString());
             list.put(s, k);
             l.next();
         }

@@ -29,8 +29,6 @@ public class DoubleField implements Field<Double> {
         return a + b;
     }
 
-
-
     @Override
     public Double negative(Double a) {
         return - a;
@@ -40,12 +38,6 @@ public class DoubleField implements Field<Double> {
     public Double mult(Double a, Double b) {
         return a * b;
     }
-
-    @Override
-    public Double parseNumber(String s) {
-        return Double.parseDouble(s);
-    }
-
 
     @Override
     public Double inverse(Double a) throws FieldCalculateException {

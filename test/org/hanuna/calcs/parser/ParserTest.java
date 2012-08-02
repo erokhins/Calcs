@@ -3,8 +3,9 @@ package org.hanuna.calcs.parser;
 import org.hanuna.calcs.evaluator.CalcEvaluatorException;
 import org.hanuna.calcs.evaluator.StringEvaluator;
 import org.hanuna.calcs.lexer.FlexLexer;
+import org.hanuna.calcs.lexer.Lexer;
 import org.hanuna.calcs.syntaxtree.SyntaxTreeNode;
-import org.hanuna.calcs.vartable.IntegerVarTable;
+import org.hanuna.calcs.vartable.DoubleVarTable;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -22,11 +23,11 @@ public class ParserTest {
     public void testParseListOfVars() {
         String s = "a = 4 b = -3 c = 0";
         try {
-            FlexLexer l = new FlexLexer(s);
-            IntegerVarTable list = ParserTableVars.parserTableVars(l);
-            assertEquals(list.get("a"), (Integer) 4);
-            assertEquals(list.get("b"), (Integer) (-3));
-            assertEquals(list.get("c"), (Integer) 0);
+            Lexer l = new FlexLexer(s);
+            DoubleVarTable list = ParserTableVars.parserTableVars(l);
+            assertEquals(list.get("a"), (Double) 4.0);
+            assertEquals(list.get("b"), (Double) (-3.0));
+            assertEquals(list.get("c"), (Double) 0.0);
             assertEquals(list.get("bb"), null);
         } catch (ParserException e) {
             fail(e.getMessage());
@@ -37,7 +38,7 @@ public class ParserTest {
 
     public void runTestErrorsListOfVars(String inputS, String errorS) {
         try {
-            FlexLexer l = new FlexLexer(inputS);
+            Lexer l = new FlexLexer(inputS);
             ParserTableVars.parserTableVars(l);
             fail();
         } catch (ParserException e) {
@@ -56,7 +57,7 @@ public class ParserTest {
 
     public void runTestParseExpression(String inputS, String result) {
         try {
-            FlexLexer l = new FlexLexer(inputS);
+            Lexer l = new FlexLexer(inputS);
             SyntaxTreeNode n = Parser.parseExpression(l);
             try {
                 String s = n.accept(new StringEvaluator(), null);
@@ -74,7 +75,7 @@ public class ParserTest {
     @Test
     public void testParseExpression() {
        runTestParseExpression(">1+2*(a-4)",
-                            "{number:1 + {number:2 * {var:a - number:4}}}");
+                            "{number:1.0 + {number:2.0 * {var:a - number:4.0}}}");
 
         runTestParseExpression(">a/b-c",
                 "{{var:a / var:b} - var:c}");
@@ -84,6 +85,8 @@ public class ParserTest {
 
         runTestParseExpression(">abc/b/c*d",
                                "{var:abc / {var:b * {var:c / var:d}}}");
+        runTestParseExpression(">-1+1",
+                               "{{- number:1.0} + number:1.0}");
 
     }
 }

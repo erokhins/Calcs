@@ -18,11 +18,13 @@ import static org.hanuna.calcs.lexer.LexerToken.*;
 
 %public
 %class FlexLexer
+%implements Lexer
 %unicode
 
 %apiprivate
 %function nextToken
 %type LexerToken
+
 
 %{
 		
@@ -31,12 +33,14 @@ import static org.hanuna.calcs.lexer.LexerToken.*;
     }
     
 	private LexerToken currentToken = null;
-	
+
+	@Override
 	public LexerToken next() throws IOException {
 		currentToken = nextToken();
 		return currentToken;
     }
-    
+
+    @Override
     public LexerToken getToken() throws IOException {
         if (currentToken == null) {
             this.next();
@@ -44,6 +48,7 @@ import static org.hanuna.calcs.lexer.LexerToken.*;
         return currentToken;
     }
 
+    @Override
     public LexerTokenType getTokenType() throws IOException {
         return this.getToken().getType();
     }
@@ -54,7 +59,7 @@ LineTerminator = \r | \n | \r\n
 
 WhiteSpace     = {LineTerminator} | [ ]
 
-Identifier = ([:letter:] | _) ([:letter:] | [:digit:] | _)*
+Identifier = ([:letter:] | [_]) ([:letter:] | [:digit:] | [_])*
 
 Number = [:digit:]+ | [:digit:]+ [.] [:digit:]+
 

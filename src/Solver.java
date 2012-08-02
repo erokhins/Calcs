@@ -1,14 +1,10 @@
 import org.hanuna.calcs.fields.DoubleField;
 import org.hanuna.calcs.fields.Field;
 import org.hanuna.calcs.lexer.FlexLexer;
-import org.hanuna.calcs.matrix.ListMatrix;
-import org.hanuna.calcs.matrix.MatrixColumn;
+import org.hanuna.calcs.lexer.Lexer;
 import org.hanuna.calcs.matrix.MatrixFunction;
-import org.hanuna.calcs.matrix.MatrixFunctionFactory;
 import org.hanuna.calcs.parser.ParserPolynom;
 import org.hanuna.calcs.polynoms.Polynom;
-import org.hanuna.calcs.solver.SystemSolver;
-import org.hanuna.calcs.solver.SystemSolverException;
 
 /**
  * @author erokhins
@@ -38,18 +34,19 @@ public class Solver {
                 return 4;
             }
         };
-
+              /*
         ListMatrix<Double> m = new ListMatrix<Double>(mf);
         MatrixFunction<Double> mOfS = MatrixFunctionFactory.matrixCutColumnFunction(m, 3);
         try {
-            MatrixColumn<Double> ss = SystemSolver.solveLinearSystem(mOfS, m.getColumn(3), f);
+            MatrixColumn<Double> ss = SolverSystem.solveLinearSystem(mOfS, m.getColumn(3), f);
             System.out.print(ss);
-        } catch (SystemSolverException e) {
+        } catch (SolverSystemException e) {
             System.err.println(e.getMessage());
         }
+            */
+        Lexer l = new FlexLexer("- 44 + 44");
+        Polynom<Double> p = ParserPolynom.parsePolynom(l);
 
-        FlexLexer l = new FlexLexer("1 + 44 + (x + 3 * y) * z");
-        Polynom<Integer> p = ParserPolynom.parsePolynom(l);
         System.out.println(ParserPolynom.polynomToStr(p));
 
     }

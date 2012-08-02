@@ -1,8 +1,6 @@
 package org.hanuna.calcs.parser;
 
-import org.hanuna.calcs.lexer.FlexLexer;
-import org.hanuna.calcs.lexer.LexerToken;
-import org.hanuna.calcs.lexer.LexerTokenType;
+import org.hanuna.calcs.lexer.*;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -15,11 +13,13 @@ import static junit.framework.Assert.fail;
 /**
  * @author erokhins
  */
-public class LexerTest {
+public abstract class LexerTest {
+
+    public abstract Lexer getLexer(Reader r);
 
     public String lexerStringReturn(Reader r) throws IOException {
         StringBuilder s = new StringBuilder();
-        FlexLexer l = new FlexLexer(r);
+        Lexer l = getLexer(r);
         LexerToken t = l.next();
         while (t.getType() != LexerTokenType.STOP) {
             s.append(t.getType().toString() + ":" + t.getString() + " ");
@@ -47,8 +47,8 @@ public class LexerTest {
 
     @Test
     public void testVarsAndNumbers() {
-        runTest("aAzZbb34_d 23a2-2 +as-",
-                "var:aAzZbb34_d number:23 var:a2 -: number:2 +: var:as -: end:");
+        runTest("aAzZbb34___d a#b 23a2-2 +as-",
+                "var:aAzZbb34___d var:a error:# var:b number:23 var:a2 -: number:2 +: var:as -: end:");
     }
 
 
@@ -64,6 +64,9 @@ public class LexerTest {
 
     @Test
     public void testSpace() {
+        runTest("","end:");
+        runTest(" ","end:");
+        runTest("\n\n\n         \r     ","end:");
         runTest("as\n12\r2 2",
                 "var:as number:12 number:2 number:2 end:");
     }

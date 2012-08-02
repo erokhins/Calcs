@@ -1,30 +1,29 @@
 package org.hanuna.calcs.evaluator;
 
-import org.hanuna.calcs.BadCodeException;
 import org.hanuna.calcs.fields.Ring;
-import org.hanuna.calcs.parser.ExpressionVisitor;
 import org.hanuna.calcs.lexer.LexerTokenType;
-import org.hanuna.calcs.syntaxtree.SyntaxTreeNodeBinary;
-import org.hanuna.calcs.syntaxtree.SyntaxTreeNodeNumber;
-import org.hanuna.calcs.syntaxtree.SyntaxTreeNodeUnary;
-import org.hanuna.calcs.syntaxtree.SyntaxTreeNodeVar;
+import org.hanuna.calcs.parser.ExpressionVisitor;
+import org.hanuna.calcs.parser.ParserDouble;
+import org.hanuna.calcs.syntaxtree.*;
 import org.hanuna.calcs.vartable.VarTable;
+import static org.hanuna.calcs.syntaxtree.SyntaxTreeUtils.*;
 
 /**
  * @author erokhins
  */
-public class RingEvaluator<T, R extends Ring<T>> implements ExpressionVisitor<T, VarTable<T>> {
-    protected final R ring;
 
-    public RingEvaluator(R ring) {
+public class RingEvaluator<T> implements ExpressionVisitor<T, VarTable<T>> {
+    protected final Ring<T> ring;
+    private final ParserDouble<T> parserDouble;
+
+    public RingEvaluator(Ring<T> ring, ParserDouble<T> parserDouble) {
         this.ring = ring;
+        this.parserDouble = parserDouble;
     }
 
     @Override
     public T visitBin(SyntaxTreeNodeBinary n, VarTable<T> l) {
-        if (n == null) {
-            throw new BadCodeException("null node");
-        }
+        checkNode(n);
         T left = n.getLeft().accept(this, l);
         T right = n.getRight().accept(this, l);
         return applyArithmeticOperation(n.getType(), left, right);
@@ -48,9 +47,7 @@ public class RingEvaluator<T, R extends Ring<T>> implements ExpressionVisitor<T,
 
     @Override
     public T visitUn(SyntaxTreeNodeUnary n, VarTable<T> l) {
-        if (n == null) {
-            throw new BadCodeException("null node");
-        }
+        checkNode(n);
         switch (n.getType()) {
             case PLUS:
                 return n.getOperand().accept(this, l);
@@ -65,9 +62,7 @@ public class RingEvaluator<T, R extends Ring<T>> implements ExpressionVisitor<T,
 
     @Override
     public T visitVar(SyntaxTreeNodeVar n, VarTable<T> l) {
-        if (n == null) {
-            throw new BadCodeException("null node");
-        }
+        checkNode(n);
         T c = l.get(n.getVar());
         if (c == null) {
             throw new CalcEvaluatorException("Undefined var: " + n.getVar());
@@ -78,7 +73,8 @@ public class RingEvaluator<T, R extends Ring<T>> implements ExpressionVisitor<T,
 
     @Override
     public T visitNumber(SyntaxTreeNodeNumber n, VarTable<T> l) {
-        return ring.parseNumber(n.getNumberStr());
+        checkNode(n);
+        return parserDouble.parseDouble(n.getNumberStr());
     }
 
 }

@@ -4,19 +4,25 @@ package org.hanuna.calcs.polynoms;
  * @author erokhins
  */
 public class Monom<T> {
-    private final PowerVariables pVar;
+
+    public static <T> Monom<T> constMonom(T value) {
+        return new Monom<T>(new SingleVariable(-1), value);
+    }
+
+    public static <T> Monom<T> SingleVarMonom(int indexVar, T value) {
+        return new Monom<T>(new SingleVariable(indexVar), value);
+    }
+
+
+    private final PowersVariables pVar;
     private final T value;
 
-    public Monom(PowerVariables pVar, T value) {
+    public Monom(PowersVariables pVar, T value) {
         this.pVar = pVar;
         this.value = value;
     }
 
-    public Monom(int varNumber, T value) {
-        this(new SimplePowerVariables(varNumber), value);
-    }
-
-    public PowerVariables getPowerVariables() {
+    public PowersVariables getPowersVariables() {
         return pVar;
     }
 

@@ -39,8 +39,8 @@ public class LexerToken {
         return tokenString;
     }
 
-    public boolean isSimpleToken() {
-        return tokenType.isSimpleType();
+    public boolean isSingleLetterType() {
+        return tokenType.isSingleLetterType();
     }
 
     public static LexerToken newVar(String nameVar) {

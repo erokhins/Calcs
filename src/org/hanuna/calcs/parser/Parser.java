@@ -1,7 +1,7 @@
 package org.hanuna.calcs.parser;
 
 
-import org.hanuna.calcs.lexer.FlexLexer;
+import org.hanuna.calcs.lexer.Lexer;
 import org.hanuna.calcs.lexer.LexerTokenType;
 import org.hanuna.calcs.syntaxtree.*;
 
@@ -21,7 +21,7 @@ public class Parser {
    * M = F | F * M
    * F = (S) | Var | Int | + F
    * */
-    public static SyntaxTreeNode parseExpression(FlexLexer l) throws ParserException, IOException {
+    public static SyntaxTreeNode parseExpression(Lexer l) throws ParserException, IOException {
         if (l.getTokenType() == RUN) {
             l.next();
 
@@ -36,7 +36,7 @@ public class Parser {
         }
     }
 
-    public static SyntaxTreeNode parseSum(FlexLexer l) throws ParserException, IOException {
+    public static SyntaxTreeNode parseSum(Lexer l) throws ParserException, IOException {
         return parseSum(l, false);
     }
 
@@ -44,7 +44,7 @@ public class Parser {
      * change need for this: a-b+c -> {var:a - {var:b - var:c}}
      * a-b+c-d -> a-(b-c+d) -> a-(b-(c-d))
     */
-    public static SyntaxTreeNode parseSum(FlexLexer l, boolean change) throws ParserException, IOException {
+    public static SyntaxTreeNode parseSum(Lexer l, boolean change) throws ParserException, IOException {
         SyntaxTreeNode left = parseMult(l);
         LexerTokenType type = l.getTokenType();
         SyntaxTreeNode right;
@@ -78,11 +78,11 @@ public class Parser {
 
 
     // change: see parseSum
-    public static SyntaxTreeNode parseMult(FlexLexer l) throws ParserException, IOException {
+    public static SyntaxTreeNode parseMult(Lexer l) throws ParserException, IOException {
         return parseMult(l, false);
     }
 
-    public static SyntaxTreeNode parseMult(FlexLexer l, boolean change) throws ParserException, IOException {
+    public static SyntaxTreeNode parseMult(Lexer l, boolean change) throws ParserException, IOException {
         SyntaxTreeNode left = parseFactor(l);
         LexerTokenType type = l.getTokenType();
         SyntaxTreeNode right;
@@ -116,7 +116,7 @@ public class Parser {
     }
 
 
-    public static SyntaxTreeNode parseFactor(FlexLexer l) throws ParserException, IOException {
+    public static SyntaxTreeNode parseFactor(Lexer l) throws ParserException, IOException {
         LexerTokenType type = l.getTokenType();
         SyntaxTreeNode left;
         switch (type) {
@@ -126,7 +126,7 @@ public class Parser {
                 return left;
 
             case NUMBER:
-                left = new SyntaxTreeNodeNumber(l.getToken().getString());
+                left = new SyntaxTreeNodeNumber(Float.parseFloat(l.getToken().getString()));
                 l.next();
                 return left;
 
