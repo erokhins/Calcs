@@ -12,17 +12,17 @@ public class MatrixUtils<T> {
         this.field = field;
     }
 
-    public T determinant(MatrixFunction<T> m) {
-        if (m.height() != m.width() || m.height() == 0) {
-            throw new IllegalArgumentException("determinant not supported for matrix " + m.width() + "x" + m.height());
+    public T determinant(Matrix<T> m) {
+        if (m.ySize() != m.xSize() || m.ySize() == 0) {
+            throw new IllegalArgumentException("determinant not supported for matrix " + m.xSize() + "x" + m.ySize());
         }
-        if (m.height() == 1) {
+        if (m.ySize() == 1) {
             return m.get(0, 0);
         }
         T sum = field.getZero();
         T sign = field.getUnityElement();
-        for (int y = 0; y < m.height(); y++) {
-            T d = determinant(MatrixFunctionFactory.matrixCutCrossFunction(m, 0, y));
+        for (int y = 0; y < m.ySize(); y++) {
+            T d = determinant(MatrixFactory.matrixCutCrossFunction(m, 0, y));
             d = field.mult(d, m.get(0, y));
             d = field.mult(d, sign);
             sum = field.add(sum, d);
@@ -30,6 +30,21 @@ public class MatrixUtils<T> {
         }
 
         return sum;
+    }
+
+    public static void checkGetRequest(Matrix m, int x, int y) {
+        if (m.xSize() <= x || x < 0) {
+            throw new IllegalArgumentException("bad x coordinate = " + x + ". Matrix size is " + x + "x" + y);
+        }
+        if (m.ySize() <= y || y < 0) {
+            throw new IllegalArgumentException("bad y coordinate = " + y + ". Matrix size is " + x + "x" + y);
+        }
+    }
+
+    public static void checkGetRequest(Column c, int n) {
+        if (c.size() <= n || n < 0) {
+            throw new IllegalArgumentException("bad index = " + n + ". Column size is " + n);
+        }
     }
 
 }

@@ -20,11 +20,16 @@ public class ListPowersVariables extends AbstractPowersVariables {
         return new ListPowersVariables(l);
     }
 
+    public static PowersVariables copyFromList(List<Integer> pv) {
+        List<Integer> list = new ArrayList<Integer>(pv);
+        return new ListPowersVariables(list);
+    }
+
 
     private final List<Integer> vars;
 
-    public ListPowersVariables(List<Integer> vars) {
-        this.vars = vars;
+    private ListPowersVariables(List<Integer> vars) {
+        this.vars = new ArrayList<Integer>(vars);
     }
 
     @Override

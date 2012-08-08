@@ -110,10 +110,10 @@ public class PolynomRing<T> implements Ring<Polynom<T>> {
             }
 
             @Override
-            public Monom<T> getMonom(int numberMonom) {
+            public Monom<T> getMonom( int numberMonom) {
                 checkNumberMonom(numberMonom, size());
                 int an = numberMonom % a.size();
-                int bn = (numberMonom - an) / b.size();
+                int bn = numberMonom / a.size();
                 Monom<T> am = a.getMonom(an);
                 Monom<T> bm = b.getMonom(bn);
                 T v = ring.mult(am.getValue(), bm.getValue());

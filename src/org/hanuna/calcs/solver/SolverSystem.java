@@ -3,24 +3,26 @@ package org.hanuna.calcs.solver;
 import org.hanuna.calcs.fields.Field;
 import org.hanuna.calcs.matrix.*;
 
+import static org.hanuna.calcs.matrix.MatrixUtils.*;
+
 /**
  * @author erokhins
  */
 public class SolverSystem {
 
-    public static <T> MatrixColumn<T> solveLinearSystem(
-            final MatrixFunction<T> matrixOfSystem,
-            final MatrixColumn<T> constColumn,
+    public static <T> Column<T> solveLinearSystem(
+            final Matrix<T> matrixOfSystem,
+            final Column<T> constColumn,
             final Field<T> field
     ) throws SolverSystemException {
 
-        if (matrixOfSystem.height() != matrixOfSystem.width()) {
-            throw new IllegalArgumentException("count vars = " + matrixOfSystem.width()
-                    + ", but count equations = " + matrixOfSystem.height());
+        if (matrixOfSystem.ySize() != matrixOfSystem.xSize()) {
+            throw new IllegalArgumentException("count vars = " + matrixOfSystem.xSize()
+                    + ", but count equations = " + matrixOfSystem.ySize());
         }
-        if (matrixOfSystem.height() != constColumn.size()) {
+        if (matrixOfSystem.ySize() != constColumn.size()) {
             throw new IllegalArgumentException("columnConst = " + constColumn.size()
-                    + ", but matrix size = " + matrixOfSystem.height());
+                    + ", but matrix size = " + matrixOfSystem.ySize());
         }
         final MatrixUtils<T> mu = new MatrixUtils<T>(field);
         T d = mu.determinant(matrixOfSystem);
@@ -30,10 +32,11 @@ public class SolverSystem {
 
         final T inverseD = field.inverse(d);
 
-        MatrixLineFunction<T> mlf = new MatrixLineFunction<T>() {
+        Column<T> mlf = new Column<T>() {
             @Override
             public T get(int n) {
-                MatrixFunction<T> tmf = MatrixFunctionFactory.matrixReplaceColumnFunction(matrixOfSystem, constColumn, n);
+                checkGetRequest(this, n);
+                Matrix<T> tmf = MatrixFactory.matrixReplaceColumnFunction(matrixOfSystem, constColumn, n);
                 T td = mu.determinant(tmf);
                 td = field.mult(inverseD, td);
                 return td;
@@ -41,10 +44,10 @@ public class SolverSystem {
 
             @Override
             public int size() {
-                return matrixOfSystem.height();
+                return matrixOfSystem.ySize();
             }
         };
-        return new ListMatrixColumn<T>(mlf);
+        return new ListColumn<T>(mlf);
     }
 
 }

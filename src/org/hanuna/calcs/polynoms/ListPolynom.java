@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * @author erokhins
  */
-public class ListPolynom<T> implements Polynom<T> {
+public class ListPolynom<T> extends Polynom<T> {
 
     public static <T> ListPolynom<T> singleVarPolynom(int indexVar, T value) {
         return new ListPolynom<T>(Monom.SingleVarMonom(indexVar, value));
@@ -14,6 +14,11 @@ public class ListPolynom<T> implements Polynom<T> {
 
     public static <T> ListPolynom<T> constantPolynom(T value) {
         return new ListPolynom<T>(Monom.constMonom(value));
+    }
+
+    public static <T> ListPolynom<T> copyFromListMonom(List<Monom<T>> listMonom) {
+        List<Monom<T>> new_list = new ArrayList<Monom<T>>(listMonom);
+        return new ListPolynom<T>(new_list);
     }
 
     private final List<Monom<T>> sumMonom;
@@ -30,6 +35,10 @@ public class ListPolynom<T> implements Polynom<T> {
         sumMonom.add(m);
     }
 
+    private ListPolynom(List<Monom<T>> listMonom) {
+        this.sumMonom = listMonom;
+    }
+
     @Override
     public int size() {
         return sumMonom.size();
@@ -43,7 +52,7 @@ public class ListPolynom<T> implements Polynom<T> {
 
     public static void checkNumberMonom(int numberMonom, int size) {
         if (numberMonom < 0 || numberMonom >= size) {
-            throw new IllegalArgumentException("incorrect number monom = " + numberMonom + ", count monom in this Polynom =" + size);
+            throw new IllegalArgumentException("incorrect number monom = " + numberMonom + ", count monom in this Polynom = " + size);
         }
     }
 }

@@ -1,10 +1,11 @@
 import org.hanuna.calcs.fields.DoubleField;
 import org.hanuna.calcs.fields.Field;
-import org.hanuna.calcs.lexer.FlexLexer;
-import org.hanuna.calcs.lexer.Lexer;
-import org.hanuna.calcs.matrix.MatrixFunction;
-import org.hanuna.calcs.parser.ParserPolynom;
-import org.hanuna.calcs.polynoms.Polynom;
+import org.hanuna.calcs.matrix.Column;
+import org.hanuna.calcs.matrix.ListMatrix;
+import org.hanuna.calcs.matrix.Matrix;
+import org.hanuna.calcs.matrix.MatrixFactory;
+import org.hanuna.calcs.solver.SolverSystem;
+import org.hanuna.calcs.solver.SolverSystemException;
 
 /**
  * @author erokhins
@@ -18,36 +19,38 @@ public class Solver {
                 {0, 0,  2, 4},
         };
 
-        MatrixFunction<Double> mf = new MatrixFunction<Double>() {
+        Matrix<Double> mf = new Matrix<Double>() {
             @Override
             public Double get(int x, int y) {
-                return (double) mm[y][x];
+                return mm[y][x];
             }
 
             @Override
-            public int height() {
+            public int ySize() {
                 return 3;
             }
 
             @Override
-            public int width() {
+            public int xSize() {
                 return 4;
             }
         };
-              /*
+
         ListMatrix<Double> m = new ListMatrix<Double>(mf);
-        MatrixFunction<Double> mOfS = MatrixFunctionFactory.matrixCutColumnFunction(m, 3);
+        Matrix<Double> mOfS = MatrixFactory.matrixCutColumnFunction(m, 3);
         try {
-            MatrixColumn<Double> ss = SolverSystem.solveLinearSystem(mOfS, m.getColumn(3), f);
-            System.out.print(ss);
+            Column<Double> ss = SolverSystem.solveLinearSystem(mOfS, MatrixFactory.matrixColumnFunction(m, 3), f);
+            for (int i = 0; i < ss.size(); i++) {
+                System.out.println(ss.get(i));
+            }
         } catch (SolverSystemException e) {
             System.err.println(e.getMessage());
         }
-            */
-        Lexer l = new FlexLexer("- 44 + 44");
-        Polynom<Double> p = ParserPolynom.parsePolynom(l);
 
-        System.out.println(ParserPolynom.polynomToStr(p));
+        //Lexer l = new FlexLexer("- 44 + 44");
+        //Polynom<Double> p = ParserSystem.parsePolynom(l);
+
+        //System.out.println(ParserSystem.polynomToStr(p));
 
     }
 }

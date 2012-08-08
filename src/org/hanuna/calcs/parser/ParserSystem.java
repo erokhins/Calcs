@@ -13,7 +13,7 @@ import java.io.IOException;
 /**
  * @author erokhins
  */
-public class ParserPolynom extends Parser {
+public class ParserSystem extends Parser {
     public static final Ring<Double> numberRing = new DoubleField();
     public static final PolynomRing<Double> ring = new PolynomRing<Double>(numberRing);
     public static final PolynomVarTable<Double> pvTable = new PolynomVarTable<Double>(numberRing);

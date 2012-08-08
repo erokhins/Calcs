@@ -44,7 +44,7 @@ public class RingEvaluatorTest {
     }
 
     @Test
-    public void testVisitBin() {
+    public void testVisit() {
         runParserEvaluatorTest("a=1 b=2 >a+2*b+a-b", 4);
         runParserEvaluatorTest("a=-2 b=1 >(a)*a - b + a", 1);
         runParserEvaluatorTest("a=-2 b=1 >a*(b-2)", 2);
